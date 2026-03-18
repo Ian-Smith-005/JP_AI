@@ -1,0 +1,81 @@
+    /* NAV */
+    .navbar{
+        border-radius: 10px;
+        margin: 5px;
+        height: 70px;
+    }
+    .custom-nav{
+        background:white;
+        box-shadow:0 3px 10px rgba(0,0,0,0.1);
+        transition: background-color 0.5s ease;
+    }
+
+    .logo span{
+        color:gold;
+    }
+
+    .nav-link{
+        position:relative;
+    }
+
+    .nav-link::after{
+        content:"";
+        position:absolute;
+        left:0;
+        bottom:-4px;
+        width:0;
+        height:2px;
+        background:gold;
+        transition:0.3s;
+    }
+
+    .nav-link:hover::after{
+        width:100%;
+    }
+
+    .nav-link.active::after{
+        width:100%;
+    }
+
+    /* HAMBURGER - MORPH TO X */
+    .navbar-toggler.hamburger{
+        background:transparent;
+        border:none;
+        padding:8px;
+        width:40px;
+        height:40px;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+        position:relative;
+    }
+
+    .hamburger span{
+        display:block;
+        width:30px;
+        height:3px;
+        background:#222;
+        margin:5px 0;
+        border-radius:3px;
+        transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position:relative;
+    }
+
+    .hamburger.open span:nth-child(1){
+        transform: rotate(45deg) translate(5px, 6px);
+    }
+    .hamburger.open span:nth-child(2){
+        opacity:0;
+    }
+    .hamburger.open span:nth-child(3){
+        transform: rotate(-45deg) translate(6px, -6px);
+    }
+    .block-img{
+        width:30px;
+        height:30px;
+        margin-right:8px;
+    }
+    .navbar-brand {
+        font-family: 'Quintessential', sans-serif;
+    }

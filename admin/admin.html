@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel | Joyalty Photography</title>
+
+<!-- GOOGLE FONTS -->
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+
+<!-- FONT AWESOME -->
+<script src="https://kit.fontawesome.com/f3068f95b3.js" crossorigin="anonymous"></script>
+
+<!-- CHART.JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- EXTERNAL CSS -->
+<link rel="stylesheet" href="assets/admin.css">
+</head>
+<body>
+
+<!-- ================= LOGIN OVERLAY ================= -->
+<div id="loginOverlay" class="login-overlay">
+  <div class="login-form">
+    <h2>Welcome Back 👋</h2>
+    <p>Sign in to Admin Panel</p>
+    <input type="text" id="username" placeholder="admin@joyalty.com">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="handleLogin()">Login</button>
+  </div>
+</div>
+
+<!-- ================= SIDEBAR ================= -->
+<div class="sidebar">
+  <h2>Admin Panel</h2>
+
+  <a href="#" class="nav-link active" data-section="dashboard">
+    <i class="fa-solid fa-gauge-high"></i> Dashboard
+  </a>
+
+  <a href="#" class="nav-link" data-section="bookings">
+    <i class="fa-solid fa-calendar-check"></i> Bookings
+  </a>
+
+  <a href="#" class="nav-link" data-section="messages">
+    <i class="fa-solid fa-envelope"></i> Messages
+  </a>
+
+  <a href="#" class="nav-link" data-section="gallery">
+    <i class="fa-solid fa-image"></i> Gallery
+  </a>
+
+  <a href="#" class="nav-link" data-section="chat">
+    <i class="fa-solid fa-comment-dots"></i> Live Chat
+  </a>
+
+  <a href="#" class="nav-link" data-section="settings">
+    <i class="fa-solid fa-gear"></i> Settings
+  </a>
+</div>
+
+<!-- ================= MAIN CONTENT ================= -->
+<div class="main-content">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <h3 id="page-title">Dashboard Overview</h3>
+
+    <div class="topbar-right">
+      <!-- DARK MODE -->
+      <i id="darkToggle" class="fa-solid fa-moon dark-toggle"></i>
+
+      <!-- PROFILE -->
+      <div class="profile" id="profileBtn">
+        <i class="fa-solid fa-circle-user"></i>
+        <span id="username-display">Admin</span>
+      </div>
+
+      <!-- DROPDOWN -->
+      <div id="profileDropdown" class="profile-dropdown">
+        <a href="#" data-modal="info"><i class="fa-solid fa-user"></i> Profile Info</a>
+        <a href="#" data-modal="password"><i class="fa-solid fa-lock"></i> Change Password</a>
+        <a href="#" data-modal="contact"><i class="fa-solid fa-envelope"></i> Contact Details</a>
+        <hr>
+        <a href="#" id="logoutBtn" class="logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= SECTIONS ================= -->
+
+  <!-- DASHBOARD -->
+  <div id="dashboard" class="section active">
+    <div class="cards">
+      <div class="card">
+        <i class="fa-solid fa-calendar-check"></i>
+        <h4>120 Bookings</h4>
+      </div>
+      <div class="card">
+        <i class="fa-solid fa-envelope"></i>
+        <h4>15 Messages</h4>
+      </div>
+      <div class="card">
+        <i class="fa-solid fa-user"></i>
+        <h4>85 Clients</h4>
+      </div>
+      <div class="card">
+        <i class="fa-solid fa-dollar-sign"></i>
+        <h4>$3,200</h4>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <h4>Bookings Overview</h4>
+      <canvas id="bookingsChart"></canvas>
+    </div>
+
+    <div class="chart-container">
+      <h4>Messages Overview</h4>
+      <canvas id="messagesChart"></canvas>
+    </div>
+  </div>
+
+  <!-- BOOKINGS -->
+  <div id="bookings" class="section">
+    <h2>Bookings Management</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Service</th>
+          <th>Date</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Jane Wanjiku</td>
+          <td>Wedding Shoot</td>
+          <td>25 March</td>
+          <td>Pending</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- MESSAGES -->
+  <div id="messages" class="section">
+    <h2>Messages</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Message</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Michael</td>
+          <td>mike@email.com</td>
+          <td>Can we reschedule?</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- GALLERY -->
+  <div id="gallery" class="section">
+    <h2>Gallery Control</h2>
+    <p>Upload and manage photos (coming soon)</p>
+  </div>
+
+  <!-- CHAT -->
+  <div id="chat" class="section">
+    <h2>Live Chat</h2>
+
+    <div class="chat-container">
+      <div class="chat-sidebar" id="chatUsers"></div>
+
+      <div class="chat-window">
+        <div class="chat-header">
+          <span id="chatName">Select a chat</span>
+        </div>
+
+        <div id="chatMessages" class="chat-messages"></div>
+
+        <div class="chat-input">
+          <input type="text" id="chatInput" placeholder="Type a message...">
+          <button id="sendBtn">➤</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div id="settings" class="section">
+    <h2>Account Settings</h2>
+
+    <div class="profile-info">
+      <h3 id="settingsName">Admin User</h3>
+      <p id="settingsEmail">admin@joyalty.com</p>
+      <p id="settingsPhone">+254 712 345 678</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- ================= MODAL ================= -->
+<div id="profileModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn">&times;</span>
+    <h3 id="modalTitle"></h3>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<!-- EXTERNAL JS -->
+<script src="assets/admin.js"></script>
+
+</body>
+</html>
