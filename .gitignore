@@ -5,3 +5,5 @@ build/
 .DS_Store
 Thumbs.db
 *.log
+.env
+node_modules/

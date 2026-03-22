@@ -1,0 +1,26 @@
+{
+  "name": "jp_ai",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ian-Smith-005/JP_AI.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Ian-Smith-005/JP_AI/issues"
+  },
+  "homepage": "https://github.com/Ian-Smith-005/JP_AI#readme",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "node": "^25.8.1"
+  }
+}
