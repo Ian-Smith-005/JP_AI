@@ -1,6 +1,4 @@
 // functions/gemini-chat.js
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
 export async function onRequestPost(context) {
   const { request, env } = context;
   const apiKey = env.GEMINI_API_KEY;
@@ -16,16 +14,23 @@ export async function onRequestPost(context) {
     const body = await request.json();
     const { messages } = body;
 
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    // Call your backend endpoint securely
+    const backendResponse = await fetch(`${env.BACKEND_URL}/api/gemini-chat`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({ messages })
+    });
 
-    const chat = model.startChat({ history: messages.slice(0, -1) });
-    const lastMessage = messages[messages.length - 1].parts[0].text;
+    if (!backendResponse.ok) {
+      throw new Error(`Backend API error: ${backendResponse.status}`);
+    }
 
-    const result = await chat.sendMessage(lastMessage);
-    const reply = result.response.text();
+    const data = await backendResponse.json();
 
-    return new Response(JSON.stringify({ reply }), {
+    return new Response(JSON.stringify({ reply: data.reply }), {
       headers: { "Content-Type": "application/json" }
     });
   } catch (error) {

@@ -237,38 +237,36 @@ async function triggerMpesa() {
 GEMINI AI API CALL (only AI - no fallback)
 ========================================================= */
 
+/* =========================================================
+GEMINI AI API CALL VIA PAGES FUNCTION
+========================================================= */
 async function callAI() {
   try {
-    // Format conversation for Gemini
-    const formatted = conversation.map((m) => ({
+    const formatted = conversation.map(m => ({
       role: m.type === "user" ? "user" : "model",
-      parts: [{ text: m.text }],
+      parts: [{ text: m.text }]
     }));
 
-    // System prompt to control behavior
     const systemPrompt = {
       role: "user",
       parts: [{
-        text: "You are Joy, a friendly and professional photography studio assistant for Joyalty Photography in Nairobi. Be helpful, warm, and creative. Help with bookings, pricing, portfolio questions, and photography tips. Use emojis sparingly. If unsure, suggest contacting the studio directly."
+        text: "You are Joy, a friendly photography studio assistant. Help with bookings, portfolio, pricing."
       }]
     };
 
-    showTyping(); // show typing while waiting for real AI
+    showTyping();
 
     const response = await fetch("/api/gemini-chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        messages: [systemPrompt, ...formatted],
-      }),
+      body: JSON.stringify({ messages: [systemPrompt, ...formatted] })
     });
 
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`API error: ${response.status}`);
 
     const data = await response.json();
     removeTyping();
+
     return data.reply || "I'm here to help! What would you like to know?";
   } catch (err) {
     console.error("Gemini API error:", err);
@@ -289,21 +287,18 @@ async function sendMessage() {
   chatInput.value = "";
   updateMemory(text);
 
-  // Handle first message (name collection)
   if (!userName) {
-    userName = text.trim().split(" ")[0];
+    userName = text.split(" ")[0];
     localStorage.setItem("studioUser", userName);
     typeMessage(`Nice to meet you ${userName}! 👋 How can I help you today?`, "bot");
     return;
   }
 
-  // Handle active booking flow (still rule-based for now)
   if (bookingFlow.active) {
     await handleBooking(text);
     return;
   }
 
-  // Use Gemini API for everything else
   const aiReply = await callAI();
   typeMessage(aiReply, "bot");
 }
