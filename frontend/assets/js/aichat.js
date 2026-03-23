@@ -255,7 +255,7 @@ async function callAI() {
 
     showTyping(); // show typing while waiting for real AI
 
-    const response = await fetch("/functions/gemini-chat", {
+    const response = await fetch("/gemini-chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
