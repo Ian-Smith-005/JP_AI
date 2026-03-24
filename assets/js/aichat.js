@@ -13,6 +13,11 @@ Features:
 ELEMENTS
 ========================================================= */
 
+
+console.log("API KEY:", env.GEMINI_API_KEY);
+
+
+
 const chatToggle = document.getElementById("chatToggle");
 const chatContainer = document.getElementById("chatContainer");
 const closeChat = document.getElementById("closeChat");
