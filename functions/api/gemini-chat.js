@@ -4,44 +4,52 @@ export async function onRequestPost(context) {
   try {
     const { messages } = await request.json();
 
-    const formattedMessages = messages.map(m => ({
-      role: m.role === "model" ? "model" : "user",
-      parts: [{ text: m.parts[0].text }]
-    }));
-
     const geminiResponse = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${env.GEMINI_API_KEY}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          contents: formattedMessages
+          contents: messages
         })
       }
     );
 
     const data = await geminiResponse.json();
 
-    console.log("GEMINI RAW:", JSON.stringify(data)); // 🔥 debug
+    // 🔥 LOG EVERYTHING
+    console.log("STATUS:", geminiResponse.status);
+    console.log("DATA:", JSON.stringify(data));
+
+    if (!geminiResponse.ok) {
+      return new Response(
+        JSON.stringify({
+          error: "Gemini API error",
+          status: geminiResponse.status,
+          details: data
+        }),
+        { status: 500 }
+      );
+    }
 
     const reply =
       data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-    return new Response(
-      JSON.stringify({
-        reply: reply || "⚠ No response from AI"
-      }),
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*"
-        }
+    return new Response(JSON.stringify({ reply }), {
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*"
       }
-    );
+    });
 
   } catch (err) {
+    console.log("SERVER ERROR:", err);
+
     return new Response(
-      JSON.stringify({ error: err.message }),
+      JSON.stringify({
+        error: err.message,
+        stack: err.stack
+      }),
       { status: 500 }
     );
   }
