@@ -14,7 +14,6 @@ ELEMENTS
 ========================================================= */
 
 
-console.log("API KEY:", env.GEMINI_API_KEY);
 
 
 
