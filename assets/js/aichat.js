@@ -318,7 +318,3 @@ chatInput.addEventListener("keypress", (e) => {
   }
 });
 
-
-
-//temporary console log to test API connection - remove in production 
-console.log("API KEY:", env.GEMINI_API_KEY);
