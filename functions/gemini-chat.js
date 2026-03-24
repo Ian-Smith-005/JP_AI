@@ -1,43 +1,54 @@
-// functions/gemini-chat.js
 export async function onRequestPost(context) {
-  const { request, env } = context;
-  const apiKey = env.GEMINI_API_KEY;
-
-  if (!apiKey) {
-    return new Response(JSON.stringify({ error: "Server configuration error" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" }
-    });
-  }
-
   try {
+    const { request, env } = context;
+
     const body = await request.json();
     const { messages } = body;
 
-    // Call your backend endpoint securely
-    const backendResponse = await fetch(`${env.BACKEND_URL}/api/gemini-chat`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({ messages })
-    });
+    const GEMINI_API_KEY = env.GEMINI_API_KEY;
 
-    if (!backendResponse.ok) {
-      throw new Error(`Backend API error: ${backendResponse.status}`);
+    if (!GEMINI_API_KEY) {
+      return new Response(JSON.stringify({ error: "Missing API key" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" }
+      });
     }
 
-    const data = await backendResponse.json();
+    const geminiResponse = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          contents: messages
+        })
+      }
+    );
 
-    return new Response(JSON.stringify({ reply: data.reply }), {
-      headers: { "Content-Type": "application/json" }
+    const data = await geminiResponse.json();
+
+    const reply =
+      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+      "I'm here to help! What would you like to know?";
+
+    return new Response(JSON.stringify({ reply }), {
+      headers: {
+        "Content-Type": "application/json"
+      }
     });
-  } catch (error) {
-    console.error(error);
-    return new Response(JSON.stringify({ error: "AI service error" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" }
-    });
+
+  } catch (err) {
+    return new Response(
+      JSON.stringify({
+        error: "Gemini API failed",
+        details: err.message
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" }
+      }
+    );
   }
 }
