@@ -247,13 +247,12 @@ async function callAI() {
       parts: [{ text: m.text }]
     }));
 
-    const systemPrompt = {
-      role: "user",
-      parts: [{
-        text: "You are Joy, a friendly photography studio assistant. Help with bookings, portfolio, pricing."
-      }]
-    };
-
+const systemPrompt = {
+  role: "user",
+  parts: [{
+    text: "You are Joy, a professional photography assistant. Be friendly, concise, and helpful."
+  }]
+};
     showTyping();
 
     const response = await fetch("/api/gemini-chat", {
