@@ -1,156 +1,117 @@
-// functions/api/bookings.js
-// Handles booking submission from services.html form
-// Saves client + booking + receipt to Neon PostgreSQL
+// functions/api/mpesa.js
+// Triggers M-Pesa STK Push via Safaricom Daraja API
 
 import { neon } from "@neondatabase/serverless";
 
 export async function onRequestPost(context) {
   const { request, env } = context;
 
-  if (!env.DATABASE_URL) {
-    return respond({ error: "DATABASE_URL not configured" }, 500);
+  const required = [
+    "MPESA_CONSUMER_KEY",
+    "MPESA_CONSUMER_SECRET",
+    "MPESA_SHORTCODE",
+    "MPESA_PASSKEY",
+    "DATABASE_URL",
+  ];
+  for (const key of required) {
+    if (!env[key]) return respond({ error: `${key} not configured` }, 500);
   }
 
   try {
-    const sql = neon(env.DATABASE_URL);
-    const body = await request.json();
+    const { phone, amount, bookingId, bookingRef } = await request.json();
 
-    const {
-      clientName,
-      clientEmail,
-      clientPhone,
-      serviceType,
-      servicePackage,
-      extraServices,
-      eventDate,
-      eventTime,
-      eventLocation,
-      guestCount,
-      eventDescription,
-      mpesaPhone,
-    } = body;
-
-    // ── Validate required fields ───────────────────────────
-    if (!clientName || !clientEmail || !clientPhone || !serviceType) {
-      return respond({ error: "Missing required fields" }, 400);
+    if (!phone || !amount) {
+      return respond({ error: "phone and amount are required" }, 400);
     }
 
-    // ── Look up service ────────────────────────────────────
-    const [service] = await sql`
-      SELECT * FROM services WHERE name = ${serviceType} LIMIT 1
-    `;
-    if (!service) return respond({ error: "Invalid service type" }, 400);
+    // ── Format phone: 0712345678 → 254712345678 ───────────
+    const formattedPhone = phone
+      .replace(/^\+/, "")   // remove leading +
+      .replace(/^0/, "254"); // replace leading 0 with 254
 
-    // ── Look up package ────────────────────────────────────
-    const packageName = servicePackage || "Standard";
-    const [pkg] = await sql`
-      SELECT * FROM packages WHERE name = ${packageName} LIMIT 1
-    `;
-    const modifier = parseFloat(pkg?.price_modifier || 1.0);
+    // ── Get Daraja OAuth token ─────────────────────────────
+    const credentials = btoa(
+      `${env.MPESA_CONSUMER_KEY}:${env.MPESA_CONSUMER_SECRET}`
+    );
 
-    // ── Look up extra service ──────────────────────────────
-    const extraName = extraServices || "None";
-    const [extra] = await sql`
-      SELECT * FROM extra_services WHERE name = ${extraName} LIMIT 1
-    `;
+    // Use sandbox for testing, swap to api.safaricom.co.ke for production
+    const baseUrl = "https://sandbox.safaricom.co.ke";
 
-    // ── Calculate pricing ──────────────────────────────────
-    const basePrice    = service.base_price;
-    const packagePrice = Math.round(basePrice * modifier);
-    const extraPrice   = extra?.price || 0;
-    const totalPrice   = packagePrice + extraPrice;
-    const depositAmount = Math.round(totalPrice * 0.30); // 30% deposit
+    const tokenRes = await fetch(
+      `${baseUrl}/oauth/v1/generate?grant_type=client_credentials`,
+      { headers: { Authorization: `Basic ${credentials}` } }
+    );
+    const tokenData = await tokenRes.json();
+    const accessToken = tokenData.access_token;
 
-    // ── Upsert client (match by email) ─────────────────────
-    const [client] = await sql`
-      INSERT INTO clients (name, email, phone)
-      VALUES (${clientName}, ${clientEmail}, ${clientPhone})
-      ON CONFLICT (email) 
-      DO UPDATE SET name = EXCLUDED.name, phone = EXCLUDED.phone
-      RETURNING id
-    `;
+    if (!accessToken) {
+      return respond({ error: "M-Pesa auth failed", detail: tokenData }, 502);
+    }
 
-    // ── Generate booking reference ─────────────────────────
-    const year = new Date().getFullYear();
-    const [countRow] = await sql`SELECT COUNT(*) FROM bookings`;
-    const count = parseInt(countRow.count) + 1;
-    const bookingRef = `JOY-${year}-${String(count).padStart(4, "0")}`;
+    // ── Build STK push ─────────────────────────────────────
+    const timestamp = new Date()
+      .toISOString()
+      .replace(/[-T:.Z]/g, "")
+      .slice(0, 14); // YYYYMMDDHHmmss
 
-    // ── Create booking ─────────────────────────────────────
-    const [booking] = await sql`
-      INSERT INTO bookings (
-        booking_ref, client_id, service_id, package_id, extra_service_id,
-        event_date, event_time, event_location, guest_count, event_description,
-        base_price, package_price, extra_price, total_price, deposit_amount,
-        status, payment_method
-      ) VALUES (
-        ${bookingRef},
-        ${client.id},
-        ${service.id},
-        ${pkg?.id || null},
-        ${extra?.id || null},
-        ${eventDate || null},
-        ${eventTime || null},
-        ${eventLocation || null},
-        ${guestCount || null},
-        ${eventDescription || null},
-        ${basePrice},
-        ${packagePrice},
-        ${extraPrice},
-        ${totalPrice},
-        ${depositAmount},
-        'pending',
-        ${mpesaPhone ? 'mpesa' : 'pending'}
-      )
-      RETURNING id
-    `;
+    const password = btoa(
+      `${env.MPESA_SHORTCODE}${env.MPESA_PASSKEY}${timestamp}`
+    );
 
-    // ── Generate receipt reference ─────────────────────────
-    const [rcpCount] = await sql`SELECT COUNT(*) FROM receipts`;
-    const rcpNum = parseInt(rcpCount.count) + 1;
-    const receiptRef = `RCP-${year}-${String(rcpNum).padStart(4, "0")}`;
+    const stkPayload = {
+      BusinessShortCode: env.MPESA_SHORTCODE,
+      Password:          password,
+      Timestamp:         timestamp,
+      TransactionType:   "CustomerPayBillOnline",
+      Amount:            amount,
+      PartyA:            formattedPhone,
+      PartyB:            env.MPESA_SHORTCODE,
+      PhoneNumber:       formattedPhone,
+      CallBackURL:       "https://joyaltyphotography.pages.dev/api/mpesa-callback",
+      AccountReference:  bookingRef || "JOYALTY",
+      TransactionDesc:   `Joyalty deposit - ${bookingRef || "booking"}`,
+    };
 
-    // ── Store receipt ──────────────────────────────────────
-    await sql`
-      INSERT INTO receipts (
-        booking_id, receipt_ref,
-        client_name, client_email, client_phone,
-        service_name, package_name, extra_name,
-        event_date, event_time, location,
-        base_price, extra_price, total_price,
-        deposit_paid, balance_due,
-        payment_ref
-      ) VALUES (
-        ${booking.id}, ${receiptRef},
-        ${clientName}, ${clientEmail}, ${clientPhone},
-        ${service.name}, ${packageName}, ${extraName},
-        ${eventDate || null}, ${eventTime || null}, ${eventLocation || null},
-        ${basePrice}, ${extraPrice}, ${totalPrice},
-        0,
-        ${totalPrice},
-        null
-      )
-    `;
+    const stkRes = await fetch(
+      `${baseUrl}/mpesa/stkpush/v1/processrequest`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(stkPayload),
+      }
+    );
 
-    // ── Respond with booking + payment info ────────────────
+    const stkData = await stkRes.json();
+
+    if (stkData.ResponseCode !== "0") {
+      return respond({ error: "STK push failed", detail: stkData }, 502);
+    }
+
+    // ── Save pending payment record to DB ──────────────────
+    if (bookingId) {
+      const sql = neon(env.DATABASE_URL);
+      await sql`
+        INSERT INTO payments (
+          booking_id, payment_method, amount, status,
+          mpesa_checkout_id, mpesa_phone
+        ) VALUES (
+          ${bookingId}, 'mpesa', ${amount}, 'pending',
+          ${stkData.CheckoutRequestID}, ${formattedPhone}
+        )
+      `;
+    }
+
     return respond({
       success: true,
-      bookingRef,
-      receiptRef,
-      clientName,
-      service: service.name,
-      package: packageName,
-      extra: extraName,
-      totalPrice,
-      depositAmount,
-      balanceDue: totalPrice,
-      paymentRequired: true,
-      mpesaPhone: mpesaPhone || clientPhone,
-      bookingId: booking.id,
+      checkoutRequestId: stkData.CheckoutRequestID,
+      message: "STK push sent — please check your phone",
     });
 
   } catch (err) {
-    console.error("Booking error:", err.message);
+    console.error("M-Pesa error:", err.message);
     return respond({ error: err.message }, 500);
   }
 }
