@@ -1,14 +1,19 @@
 /* =====================================================
-   JOYALTY BOOKING SYSTEM - CLEAN DB VERSION (2026)
-   Features: DB Integration + Smooth Animations + UX Polish
+   JOYALTY BOOKING SYSTEM - FINAL CLEAN VERSION
+   Fixed smooth show/hide animations + DB integration
 ===================================================== */
 
 let currentStep = 0;
-let bookingData = {};      // Form data accumulator
-let bookingResult = {};    // Response from /api/bookings
+let bookingData = {};
+let bookingResult = {};
 
-// ── DOM Elements ─────────────────────────────────────
-const form = document.getElementById("bookingForm");
+// DOM Elements
+const bookingSection = document.getElementById("booking-form-section");
+const servicesSection = document.getElementById("services-section");
+const successScreen = document.getElementById("successScreen");
+const receiptSection = document.getElementById("receiptSection");
+const receiptContent = document.getElementById("receiptContent");
+
 const steps = document.querySelectorAll(".form-step");
 const progressSteps = document.querySelectorAll(".progress-step");
 const progressLine = document.getElementById("progressLine");
@@ -16,12 +21,6 @@ const progressLine = document.getElementById("progressLine");
 const nextBtn = document.getElementById("nextStep");
 const prevBtn = document.getElementById("prevStep");
 const resetBtn = document.getElementById("resetForm");
-
-const bookingSection = document.getElementById("booking-form-section");
-const servicesSection = document.getElementById("services-section");
-const successScreen = document.getElementById("successScreen");
-const receiptSection = document.getElementById("receiptSection");
-const receiptContent = document.getElementById("receiptContent");
 
 const resetModal = document.getElementById("resetModal");
 const confirmResetBtn = document.getElementById("confirmReset");
@@ -32,7 +31,8 @@ const clientPhone = document.getElementById("clientPhone");
 const mpesaPhone = document.getElementById("mpesaPhone");
 const mpesaPayBtn = document.getElementById("mpesaPayBtn");
 
-// ── Utility: Show Step ───────────────────────────────────
+// ====================== STEP NAVIGATION ======================
+
 function goToStep(index) {
     steps.forEach((s, i) => s.classList.toggle("active", i === index));
 
@@ -41,8 +41,10 @@ function goToStep(index) {
         s.classList.toggle("completed", i < index);
     });
 
-    const percent = (index / (steps.length - 1)) * 100;
-    if (progressLine) progressLine.style.width = `${percent}%`;
+    if (progressLine) {
+        const percent = (index / (steps.length - 1)) * 100;
+        progressLine.style.width = `${percent}%`;
+    }
 
     prevBtn.style.display = index === 0 ? "none" : "inline-block";
     nextBtn.textContent = index === steps.length - 1 ? "Confirm" : "Next";
@@ -50,7 +52,8 @@ function goToStep(index) {
     currentStep = index;
 }
 
-// ── Validation ───────────────────────────────────────────
+// ====================== VALIDATION ======================
+
 function validateStep(step) {
     if (step === 0) {
         const name = document.getElementById("clientName").value.trim();
@@ -58,7 +61,7 @@ function validateStep(step) {
         const phone = document.getElementById("clientPhone").value.trim();
 
         if (!name || !email || !phone) {
-            alert("Please fill in all personal details (Name, Email, Phone).");
+            alert("Please fill in all personal details (Name, Email & Phone).");
             return false;
         }
         if (!/\S+@\S+\.\S+/.test(email)) {
@@ -74,11 +77,11 @@ function validateStep(step) {
             return false;
         }
     }
-
     return true;
 }
 
-// ── Collect data from current step ───────────────────────
+// ====================== COLLECT FORM DATA ======================
+
 function collectStep(step) {
     if (step === 0) {
         bookingData.clientName = document.getElementById("clientName").value.trim();
@@ -100,7 +103,8 @@ function collectStep(step) {
     }
 }
 
-// ── Submit booking to backend ────────────────────────────
+// ====================== SUBMIT BOOKING TO DB ======================
+
 async function submitBooking() {
     try {
         const res = await fetch("/api/bookings", {
@@ -121,7 +125,7 @@ async function submitBooking() {
             mpesaPhone.value = bookingData.clientPhone;
         }
 
-        // Show pricing info in payment step
+        // Show payment info
         const payInfo = document.querySelector(".payment-info");
         if (payInfo && bookingResult.depositAmount) {
             payInfo.innerHTML = `
@@ -139,7 +143,8 @@ async function submitBooking() {
     }
 }
 
-// ── M-Pesa Payment Handler ───────────────────────────────
+// ====================== M-PESA PAYMENT ======================
+
 if (mpesaPayBtn) {
     mpesaPayBtn.addEventListener("click", async () => {
         const phone = mpesaPhone.value.trim() || bookingData.clientPhone;
@@ -170,7 +175,7 @@ if (mpesaPayBtn) {
             const data = await res.json();
 
             if (data.success) {
-                btn.textContent = "✅ Check your phone for STK Push!";
+                btn.textContent = "✅ Check your phone!";
                 pollPayment(bookingResult.bookingId);
             } else {
                 btn.disabled = false;
@@ -185,10 +190,11 @@ if (mpesaPayBtn) {
     });
 }
 
-// ── Poll for payment confirmation ────────────────────────
+// ====================== POLL PAYMENT ======================
+
 async function pollPayment(bookingId, attempts = 0) {
     if (attempts > 12) {
-        alert("Payment confirmation timeout. Please check your M-Pesa and contact us.");
+        alert("Payment confirmation timeout. Please check your M-Pesa or contact us.");
         return;
     }
 
@@ -208,7 +214,8 @@ async function pollPayment(bookingId, attempts = 0) {
     }
 }
 
-// ── Show Success Screen ──────────────────────────────────
+// ====================== SUCCESS & RECEIPT ======================
+
 function showSuccess(receipt) {
     bookingSection.style.display = "none";
     successScreen.style.display = "flex";
@@ -218,7 +225,6 @@ function showSuccess(receipt) {
     }, { once: true });
 }
 
-// ── Render Receipt ───────────────────────────────────────
 function showReceipt(receipt) {
     successScreen.style.display = "none";
     receiptSection.style.display = "flex";
@@ -244,13 +250,14 @@ function showReceipt(receipt) {
             <tr><td colspan="2"><hr></td></tr>
             <tr><td colspan="2" style="text-align:center; color:#666; font-size:13px;">
                 Thank you for choosing Joyalty Photography 📷<br>
-                info@joyalty.com | +254 XXX XXX XXX | Nairobi, Kenya
+                info@joyalty.com | Nairobi, Kenya
             </td></tr>
         </table>
     `;
 }
 
-// ── Open Booking Form with Animation ─────────────────────
+// ====================== SMOOTH FORM OPEN / CLOSE ======================
+
 function showBookingForm() {
     servicesSection.classList.add("hidden");
 
@@ -258,15 +265,18 @@ function showBookingForm() {
         servicesSection.style.display = "none";
         bookingSection.style.display = "block";
 
-        setTimeout(() => {
+        // Force browser reflow
+        void bookingSection.offsetWidth;
+
+        requestAnimationFrame(() => {
             bookingSection.classList.add("active");
-            goToStep(0);
-            bookingSection.scrollIntoView({ behavior: "smooth" });
-        }, 50);
-    }, 300);
+        });
+
+        bookingSection.scrollIntoView({ behavior: "smooth" });
+        goToStep(0);
+    }, 450);
 }
 
-// ── Close Booking Form with Animation ────────────────────
 function closeBookingForm() {
     bookingSection.classList.remove("active");
 
@@ -274,44 +284,38 @@ function closeBookingForm() {
         bookingSection.style.display = "none";
         servicesSection.style.display = "block";
 
-        setTimeout(() => {
+        void servicesSection.offsetWidth;
+
+        requestAnimationFrame(() => {
             servicesSection.classList.remove("hidden");
-            servicesSection.scrollIntoView({ behavior: "smooth" });
-        }, 50);
-    }, 300);
+        });
+
+        servicesSection.scrollIntoView({ behavior: "smooth" });
+    }, 550);
 }
 
-// ── Service Card Click Handlers ──────────────────────────
-document.querySelectorAll(".start-booking").forEach((btn) => {
+// ====================== EVENT LISTENERS ======================
+
+// Service cards
+document.querySelectorAll(".start-booking").forEach(btn => {
     btn.addEventListener("click", () => {
         const card = btn.closest(".service-card");
         if (card) {
-            const serviceTitle = card.querySelector("h4")?.textContent?.trim();
-            const serviceSelect = document.getElementById("serviceType");
-
-            if (serviceSelect && serviceTitle) {
-                const map = {
-                    "Wedding Photography": "Wedding Photography",
-                    "Portrait Sessions": "Portrait Session",
-                    "Commercial Photography": "Commercial Photography",
-                    "Event Coverage": "Event Coverage",
-                    "Engagement Shoots": "Engagement Shoot",
-                    "Family Photography": "Family Photography",
-                };
-                serviceSelect.value = map[serviceTitle] || serviceTitle;
-            }
+            const title = card.querySelector("h4")?.textContent?.trim();
+            const select = document.getElementById("serviceType");
+            if (select && title) select.value = title;
         }
         showBookingForm();
     });
 });
 
-// ── Navigation Buttons ───────────────────────────────────
-nextBtn?.addEventListener("click", async () => {
+// Navigation buttons
+nextBtn.addEventListener("click", async () => {
     if (!validateStep(currentStep)) return;
     collectStep(currentStep);
 
-    // Submit to DB just before payment step
-    if (currentStep === steps.length - 2) {
+    // Submit booking before going to payment step
+    if (currentStep === 2) {  // Step 3 (index 2) → Payment step
         const success = await submitBooking();
         if (!success) return;
     }
@@ -321,44 +325,38 @@ nextBtn?.addEventListener("click", async () => {
     }
 });
 
-prevBtn?.addEventListener("click", () => {
+prevBtn.addEventListener("click", () => {
     if (currentStep > 0) goToStep(currentStep - 1);
 });
 
-// ── Auto-fill M-Pesa ─────────────────────────────────────
-clientPhone?.addEventListener("input", () => {
+// Close booking
+closeBookingBtn.addEventListener("click", closeBookingForm);
+
+// Auto-fill M-Pesa phone
+clientPhone.addEventListener("input", () => {
     if (mpesaPhone) mpesaPhone.value = clientPhone.value;
 });
 
-// ── Reset Form ───────────────────────────────────────────
-resetBtn?.addEventListener("click", () => {
-    resetModal.style.display = "flex";
-});
-
-cancelResetBtn?.addEventListener("click", () => {
-    resetModal.style.display = "none";
-});
-
-confirmResetBtn?.addEventListener("click", () => {
-    form.reset();
+// Reset form
+resetBtn.addEventListener("click", () => resetModal.style.display = "flex");
+cancelResetBtn.addEventListener("click", () => resetModal.style.display = "none");
+confirmResetBtn.addEventListener("click", () => {
+    document.getElementById("bookingForm").reset();
     bookingData = {};
     bookingResult = {};
     goToStep(0);
     resetModal.style.display = "none";
 });
 
-// Close modal when clicking outside
-window.addEventListener("click", (e) => {
-    if (e.target === resetModal) resetModal.style.display = "none";
-});
-
-// ── Close Booking Button ─────────────────────────────────
-closeBookingBtn?.addEventListener("click", closeBookingForm);
-
-// ── Receipt Close ────────────────────────────────────────
+// Close receipt
 document.getElementById("closeReceipt")?.addEventListener("click", () => {
     receiptSection.style.display = "none";
 });
 
-// ── Initialize ───────────────────────────────────────────
+// Close success screen if needed (optional)
+successScreen?.addEventListener("click", (e) => {
+    if (e.target === successScreen) successScreen.style.display = "none";
+});
+
+// ====================== INITIALIZE ======================
 goToStep(0);
