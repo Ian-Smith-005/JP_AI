@@ -1,304 +1,311 @@
-/* =====================================================
-   JOYALTY BOOKING SYSTEM (CLEAN VERSION)
-===================================================== */
+/* ============================================================
+   services-booking.js
+   Wires services.html multi-step form to:
+   - /api/bookings  (create booking + receipt in DB)
+   - /api/mpesa     (trigger STK push)
+   - /api/receipt   (fetch and render receipt)
+============================================================ */
 
+// ── State ─────────────────────────────────────────────────────
+let currentStep  = 0;
+let bookingData  = {};  // accumulates form data across steps
+let bookingResult = {}; // response from /api/bookings
 
-/* =====================================================
-   1. GLOBAL VARIABLES & ELEMENTS
-===================================================== */
-
-const STORAGE_KEY = "bookingData";
-
-let bookingData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-
-const form = document.getElementById("bookingForm");
-const steps = document.querySelectorAll(".form-step");
+// ── DOM refs ──────────────────────────────────────────────────
+const steps       = document.querySelectorAll(".form-step");
 const progressSteps = document.querySelectorAll(".progress-step");
-const progressLine = document.getElementById("progressLine");
-
-const nextBtn = document.getElementById("nextStep");
-const prevBtn = document.getElementById("prevStep");
-
+const progressLine  = document.getElementById("progressLine");
+const nextBtn     = document.getElementById("nextStep");
+const prevBtn     = document.getElementById("prevStep");
+const resetBtn    = document.getElementById("resetForm");
 const bookingSection = document.getElementById("booking-form-section");
-const servicesSection = document.getElementById("services-section");
-const bookingButtons = document.querySelectorAll(".start-booking");
+const successScreen  = document.getElementById("successScreen");
+const receiptSection = document.getElementById("receiptSection");
+const receiptContent = document.getElementById("receiptContent");
 
-const resetBtn = document.getElementById("resetForm");
-const resetModal = document.getElementById("resetModal");
-const confirmResetBtn = document.getElementById("confirmReset");
-const cancelResetBtn = document.getElementById("cancelReset");
-
-const closeBooking = document.getElementById("closeBooking");
-
-const clientPhone = document.getElementById("clientPhone");
-const mpesaPhone = document.getElementById("mpesaPhone");
-
-let currentStep = 0;
-
-
-/* =====================================================
-   2. LOCAL STORAGE (SAVE & RESTORE)
-===================================================== */
-
-// Save all inputs
-function saveToStorage() {
-    const inputs = form.querySelectorAll("input, select, textarea");
-
-    inputs.forEach(input => {
-        bookingData[input.id] = input.value;
-    });
-
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(bookingData));
-}
-
-// Restore saved data
-function restoreFromStorage() {
-    Object.keys(bookingData).forEach(key => {
-        const field = document.getElementById(key);
-        if (field) field.value = bookingData[key];
-    });
-}
-
-// Auto-save on input
-form.querySelectorAll("input, select, textarea").forEach(input => {
-    input.addEventListener("input", saveToStorage);
+// ── Open booking form from service cards ──────────────────────
+document.querySelectorAll(".start-booking").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    // Pre-fill service from the card if possible
+    const card = btn.closest(".service-card");
+    if (card) {
+      const serviceTitle = card.querySelector("h4")?.textContent?.trim();
+      const serviceSelect = document.getElementById("serviceType");
+      if (serviceSelect && serviceTitle) {
+        // Map card titles to select values
+        const map = {
+          "Wedding Photography":    "Wedding Photography",
+          "Portrait Sessions":      "Portrait Session",
+          "Commercial Photography": "Commercial Photography",
+          "Event Coverage":         "Event Coverage",
+          "Engagement Shoots":      "Engagement Shoot",
+          "Family Photography":     "Family Photography",
+        };
+        serviceSelect.value = map[serviceTitle] || "";
+      }
+    }
+    showBookingForm();
+  });
 });
 
+function showBookingForm() {
+  bookingSection.style.display = "block";
+  bookingSection.scrollIntoView({ behavior: "smooth" });
+  goToStep(0);
+}
 
-/* =====================================================
-   3. FORM STEP CONTROL
-===================================================== */
+// ── Close booking form ────────────────────────────────────────
+document.getElementById("closeBooking")?.addEventListener("click", () => {
+  bookingSection.style.display = "none";
+});
 
-function showStep(step) {
-    steps.forEach(s => s.classList.remove("active"));
-    steps[step].classList.add("active");
+// ── Step navigation ───────────────────────────────────────────
+function goToStep(index) {
+  steps.forEach((s, i) => s.classList.toggle("active", i === index));
+  progressSteps.forEach((s, i) => {
+    s.classList.toggle("active", i <= index);
+    s.classList.toggle("completed", i < index);
+  });
 
-    progressSteps.forEach(p => p.classList.remove("active"));
-    for (let i = 0; i <= step; i++) {
-        progressSteps[i].classList.add("active");
+  // Progress line width
+  if (progressLine) {
+    const pct = (index / (steps.length - 1)) * 100;
+    progressLine.style.width = pct + "%";
+  }
+
+  prevBtn.style.display = index === 0 ? "none" : "inline-block";
+  nextBtn.textContent   = index === steps.length - 1 ? "Confirm" : "Next";
+  currentStep = index;
+}
+
+nextBtn?.addEventListener("click", async () => {
+  if (!validateStep(currentStep)) return;
+  collectStep(currentStep);
+
+  if (currentStep === steps.length - 2) {
+    // About to show Step 4 (payment) — submit booking to DB first
+    await submitBooking();
+  }
+
+  if (currentStep < steps.length - 1) {
+    goToStep(currentStep + 1);
+  }
+});
+
+prevBtn?.addEventListener("click", () => {
+  if (currentStep > 0) goToStep(currentStep - 1);
+});
+
+// ── Validate each step ────────────────────────────────────────
+function validateStep(step) {
+  if (step === 0) {
+    const name  = document.getElementById("clientName").value.trim();
+    const email = document.getElementById("clientEmail").value.trim();
+    const phone = document.getElementById("clientPhone").value.trim();
+    if (!name || !email || !phone) {
+      alert("Please fill in all personal details.");
+      return false;
+    }
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      alert("Please enter a valid email address.");
+      return false;
+    }
+  }
+  if (step === 1) {
+    const service = document.getElementById("serviceType").value;
+    if (!service) {
+      alert("Please select a service.");
+      return false;
+    }
+  }
+  return true;
+}
+
+// ── Collect form data per step ────────────────────────────────
+function collectStep(step) {
+  if (step === 0) {
+    bookingData.clientName  = document.getElementById("clientName").value.trim();
+    bookingData.clientEmail = document.getElementById("clientEmail").value.trim();
+    bookingData.clientPhone = document.getElementById("clientPhone").value.trim();
+  }
+  if (step === 1) {
+    bookingData.serviceType     = document.getElementById("serviceType").value;
+    bookingData.servicePackage  = document.getElementById("servicePackage").value;
+    bookingData.extraServices   = document.getElementById("extraServices").value;
+  }
+  if (step === 2) {
+    bookingData.eventDate        = document.getElementById("eventDate").value;
+    bookingData.eventTime        = document.getElementById("eventTime").value;
+    bookingData.eventLocation    = document.getElementById("eventLocation").value.trim();
+    bookingData.guestCount       = document.getElementById("guestCount").value;
+    bookingData.eventDescription = document.getElementById("eventDescription").value.trim();
+    bookingData.mpesaPhone       = document.getElementById("mpesaPhone")?.value?.trim()
+                                    || bookingData.clientPhone;
+  }
+}
+
+// ── Submit booking to /api/bookings ───────────────────────────
+async function submitBooking() {
+  try {
+    const res = await fetch("/api/bookings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(bookingData),
+    });
+    bookingResult = await res.json();
+
+    if (!bookingResult.success) {
+      alert("Booking error: " + bookingResult.error);
+      return;
     }
 
-    const percent = (step / (steps.length - 1)) * 100;
-    progressLine.style.width = percent + "%";
-
-    prevBtn.style.display = step === 0 ? "none" : "inline-block";
-    nextBtn.innerText = step === steps.length - 1 ? "Finish" : "Next";
-}
-
-
-/* =====================================================
-   4. VALIDATION SYSTEM
-===================================================== */
-
-function showError(input, message) {
-    input.classList.add("input-error");
-
-    let error = input.parentElement.querySelector(".error-text");
-
-    if (!error) {
-        error = document.createElement("small");
-        error.className = "error-text";
-        input.parentElement.appendChild(error);
+    // Pre-fill M-Pesa phone and show amount
+    const mpesaInput = document.getElementById("mpesaPhone");
+    if (mpesaInput && !mpesaInput.value) {
+      mpesaInput.value = bookingData.clientPhone;
     }
 
-    error.innerText = message;
-}
-
-function clearError(input) {
-    input.classList.remove("input-error");
-
-    let error = input.parentElement.querySelector(".error-text");
-    if (error) error.remove();
-}
-
-function validateStep() {
-    const inputs = steps[currentStep].querySelectorAll("input, select, textarea");
-
-    let valid = true;
-
-    inputs.forEach(input => {
-        clearError(input);
-
-        if (input.hasAttribute("required") && input.value.trim() === "") {
-            showError(input, "This field is required");
-            valid = false;
-        }
-
-        if (input.type === "email") {
-            const pattern = /^\S+@\S+\.\S+$/;
-            if (input.value && !pattern.test(input.value)) {
-                showError(input, "Enter a valid email");
-                valid = false;
-            }
-        }
-
-        if (input.type === "tel") {
-            const pattern = /^[0-9+\s]{10,15}$/;
-            if (input.value && !pattern.test(input.value)) {
-                showError(input, "Enter a valid phone number");
-                valid = false;
-            }
-        }
-    });
-
-    return valid;
-}
-
-
-/* =====================================================
-   5. STEP NAVIGATION BUTTONS
-===================================================== */
-
-nextBtn.addEventListener("click", () => {
-    if (!validateStep()) return;
-
-    saveToStorage();
-
-    if (currentStep < steps.length - 1) {
-        currentStep++;
-        showStep(currentStep);
+    // Show deposit amount in payment step
+    const payInfo = document.querySelector(".payment-info");
+    if (payInfo && bookingResult.depositAmount) {
+      payInfo.innerHTML = `
+        <strong>Booking Ref:</strong> ${bookingResult.bookingRef}<br>
+        <strong>Total:</strong> KSh ${bookingResult.totalPrice?.toLocaleString()}<br>
+        <strong>Deposit (30%):</strong> KSh ${bookingResult.depositAmount?.toLocaleString()}<br>
+        Pay via <strong>M-Pesa STK Push</strong> to secure your booking.
+      `;
     }
-});
+  } catch (err) {
+    console.error("submitBooking error:", err);
+    alert("Could not connect to the booking system. Please try again.");
+  }
+}
 
-prevBtn.addEventListener("click", () => {
-    if (currentStep > 0) {
-        currentStep--;
-        showStep(currentStep);
+// ── M-Pesa STK push ───────────────────────────────────────────
+document.getElementById("mpesaPayBtn")?.addEventListener("click", async () => {
+  const phone  = document.getElementById("mpesaPhone").value.trim() || bookingData.clientPhone;
+  const amount = bookingResult.depositAmount || 1000;
+
+  if (!phone) {
+    alert("Please enter your M-Pesa phone number.");
+    return;
+  }
+
+  const btn = document.getElementById("mpesaPayBtn");
+  btn.disabled = true;
+  btn.textContent = "Sending request...";
+
+  try {
+    const res = await fetch("/api/mpesa", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        phone,
+        amount,
+        bookingId:  bookingResult.bookingId,
+        bookingRef: bookingResult.bookingRef,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      btn.textContent = "✅ Check your phone!";
+      // Poll for payment confirmation every 5s for 60s
+      pollPayment(bookingResult.bookingId);
+    } else {
+      btn.disabled = false;
+      btn.textContent = "Retry M-Pesa";
+      alert("M-Pesa error: " + (data.error || "Please try again."));
     }
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = "Retry M-Pesa";
+    alert("Connection error. Please try again.");
+  }
 });
 
-// Allow clicking progress steps
-progressSteps.forEach((step, index) => {
-    step.addEventListener("click", () => {
-        if (index > currentStep && !validateStep()) return;
+// ── Poll for payment success (every 5s, max 12 attempts) ──────
+async function pollPayment(bookingId, attempts = 0) {
+  if (attempts > 12) return;
 
-        currentStep = index;
-        showStep(currentStep);
-    });
-});
+  await new Promise(r => setTimeout(r, 5000));
 
+  try {
+    const res  = await fetch(`/api/receipt?bookingId=${bookingId}`);
+    const data = await res.json();
 
-/* =====================================================
-   6. AUTO-FILL MPESA PHONE
-===================================================== */
-
-clientPhone.addEventListener("input", () => {
-    mpesaPhone.value = clientPhone.value;
-    saveToStorage();
-});
-
-
-/* =====================================================
-   7. SERVICE SELECTION + SHOW FORM
-===================================================== */
-
-bookingButtons.forEach(button => {
-    button.addEventListener("click", () => {
-
-        // Get selected service
-        const card = button.closest(".service-card");
-        const serviceName = card.querySelector("h4").textContent.trim();
-
-        document.getElementById("serviceType").value = serviceName;
-
-        // Show form
-        servicesSection.classList.add("hidden");
-
-        setTimeout(() => {
-            servicesSection.style.display = "none";
-            bookingSection.style.display = "block";
-
-            setTimeout(() => {
-                bookingSection.classList.add("active");
-            }, 50);
-
-            bookingSection.scrollIntoView({ behavior: "smooth" });
-
-        }, 300);
-    });
-});
-
-
-/* =====================================================
-   8. CLOSE BOOKING FORM
-===================================================== */
-
-closeBooking.addEventListener("click", () => {
-
-    bookingSection.classList.remove("active");
-
-    setTimeout(() => {
-        bookingSection.style.display = "none";
-
-        servicesSection.style.display = "block";
-
-        setTimeout(() => {
-            servicesSection.classList.remove("hidden");
-        }, 50);
-
-        servicesSection.scrollIntoView({ behavior: "smooth" });
-
-    }, 300);
-});
-
-
-/* =====================================================
-   9. RESET FORM MODAL LOGIC
-===================================================== */
-
-// Open modal
-resetBtn.addEventListener("click", () => {
-    resetModal.style.display = "flex";
-});
-
-// Close modal
-function closeResetModal() {
-    resetModal.style.display = "none";
+    if (data.receipt?.deposit_paid > 0) {
+      showSuccess(data.receipt);
+    } else {
+      pollPayment(bookingId, attempts + 1);
+    }
+  } catch (_) {
+    pollPayment(bookingId, attempts + 1);
+  }
 }
 
-cancelResetBtn.addEventListener("click", closeResetModal);
+// ── Show success screen ───────────────────────────────────────
+function showSuccess(receipt) {
+  bookingSection.style.display = "none";
+  successScreen.style.display  = "flex";
 
-// Confirm reset
-confirmResetBtn.addEventListener("click", () => {
-
-    form.reset();
-
-    localStorage.removeItem(STORAGE_KEY);
-    bookingData = {};
-
-    currentStep = 0;
-    showStep(currentStep);
-
-    closeResetModal();
-});
-
-// Click outside modal
-window.addEventListener("click", (e) => {
-    if (e.target === resetModal) closeResetModal();
-});
-
-
-/* =====================================================
-   10. MPESA BUTTON (PLACEHOLDER)
-===================================================== */
-
-const mpesaBtn = document.getElementById("mpesaPayBtn");
-
-if (mpesaBtn) {
-    mpesaBtn.addEventListener("click", () => {
-
-        if (!validateStep()) return;
-
-        saveToStorage();
-
-        alert("M-Pesa STK Push will be triggered here.");
-    });
+  document.getElementById("viewReceipt")?.addEventListener("click", () => {
+    showReceipt(receipt);
+  });
 }
 
+// ── Render receipt ────────────────────────────────────────────
+function showReceipt(receipt) {
+  successScreen.style.display  = "none";
+  receiptSection.style.display = "flex";
 
-/* =====================================================
-   11. INITIALIZE APP
-===================================================== */
+  receiptContent.innerHTML = `
+    <table style="width:100%;border-collapse:collapse;font-size:14px">
+      <tr><td><strong>Receipt Ref</strong></td><td>${receipt.receipt_ref}</td></tr>
+      <tr><td><strong>Client</strong></td><td>${receipt.client_name}</td></tr>
+      <tr><td><strong>Email</strong></td><td>${receipt.client_email}</td></tr>
+      <tr><td><strong>Phone</strong></td><td>${receipt.client_phone}</td></tr>
+      <tr><td colspan="2"><hr></td></tr>
+      <tr><td><strong>Service</strong></td><td>${receipt.service_name}</td></tr>
+      <tr><td><strong>Package</strong></td><td>${receipt.package_name}</td></tr>
+      <tr><td><strong>Extra</strong></td><td>${receipt.extra_name}</td></tr>
+      <tr><td><strong>Date</strong></td><td>${receipt.event_date || "TBD"}</td></tr>
+      <tr><td><strong>Time</strong></td><td>${receipt.event_time || "TBD"}</td></tr>
+      <tr><td><strong>Location</strong></td><td>${receipt.location || "TBD"}</td></tr>
+      <tr><td colspan="2"><hr></td></tr>
+      <tr><td><strong>Total</strong></td><td>KSh ${Number(receipt.total_price).toLocaleString()}</td></tr>
+      <tr><td><strong>Deposit Paid</strong></td><td>KSh ${Number(receipt.deposit_paid).toLocaleString()}</td></tr>
+      <tr><td><strong>Balance Due</strong></td><td>KSh ${Number(receipt.balance_due).toLocaleString()}</td></tr>
+      <tr><td><strong>M-Pesa Ref</strong></td><td>${receipt.payment_ref || "Pending"}</td></tr>
+      <tr><td colspan="2"><hr></td></tr>
+      <tr><td colspan="2" style="text-align:center;color:#888;font-size:12px">
+        Thank you for choosing Joyalty Photography 📷<br>
+        info@joyalty.com | +254 XXX XXX | Nairobi, Kenya
+      </td></tr>
+    </table>
+  `;
+}
 
-restoreFromStorage();
-showStep(currentStep);
+document.getElementById("closeReceipt")?.addEventListener("click", () => {
+  receiptSection.style.display = "none";
+});
+
+// ── Reset form ────────────────────────────────────────────────
+const resetModal   = document.getElementById("resetModal");
+const confirmReset = document.getElementById("confirmReset");
+const cancelReset  = document.getElementById("cancelReset");
+
+resetBtn?.addEventListener("click", () => {
+  resetModal.style.display = "flex";
+});
+cancelReset?.addEventListener("click", () => {
+  resetModal.style.display = "none";
+});
+confirmReset?.addEventListener("click", () => {
+  document.getElementById("bookingForm").reset();
+  bookingData   = {};
+  bookingResult = {};
+  goToStep(0);
+  resetModal.style.display = "none";
+});
