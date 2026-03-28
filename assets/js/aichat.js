@@ -251,12 +251,8 @@ async function callAI() {
       parts: [{ text: m.text }]
     }));
 
-const systemPrompt = {
-  role: "user",
-  parts: [{
-    text: "You are Joy, a professional photography assistant. Be friendly, concise, and helpful."
-  }]
-};
+// In callAI(), replace the body with this:
+body: JSON.stringify({ messages: formatted })  // no systemPrompt prepended
     showTyping();
 
     const response = await fetch("/api/gemini-chat", {
