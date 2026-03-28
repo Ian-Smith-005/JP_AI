@@ -2,14 +2,20 @@
 export async function onRequestPost(context) {
   const { request, env } = context;
 
-  // ── Guard: API key must exist ──────────────────────────────
+  /*── Guard: API key must exist ──────────────────────────────
   if (!env.GEMINI_API_KEY) {
     return new Response(
       JSON.stringify({ error: "GEMINI_API_KEY not set in Cloudflare Pages environment variables" }),
       { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
-
+  */
+if (!env.GEMINI_API_KEY) {
+  return new Response(
+    JSON.stringify({ error: "GEMINI_API_KEY is missing from env" }),
+    { status: 200, headers: corsHeaders() } // 200 so you can read it easily
+  );
+}
   try {
     const { messages } = await request.json();
 
