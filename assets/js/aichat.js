@@ -251,26 +251,32 @@ async function callAI() {
       parts: [{ text: m.text }]
     }));
 
-// In callAI(), replace the body with this:
-body: JSON.stringify({ messages: formatted })  // no systemPrompt prepended
     showTyping();
 
     const response = await fetch("/api/gemini-chat", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: [systemPrompt, ...formatted] })
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        messages: formatted
+      })
     });
 
-    if (!response.ok) throw new Error(`API error: ${response.status}`);
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(errText);
+    }
 
     const data = await response.json();
+
     removeTyping();
 
-    return data.reply || "I'm here to help! What would you like to know?";
+    return data.reply || "I'm here to help!";
   } catch (err) {
     console.error("Gemini API error:", err);
     removeTyping();
-    return "Sorry, I'm having trouble connecting right now. Please try again later or contact the studio directly.";
+    return "⚠ AI connection failed. Please try again.";
   }
 }
 
