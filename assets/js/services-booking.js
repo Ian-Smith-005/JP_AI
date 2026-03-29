@@ -279,34 +279,41 @@ mpesaPayBtn?.addEventListener("click", async () => {
 
   mpesaPayBtn.textContent = "Sending STK push...";
 
-  try {
+// REPLACE with this — safe JSON parse, shows actual server error
+try {
     const res  = await fetch("/api/mpesa", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        phone,
-        amount:     deposit,
-        bookingId:  bookingResult.bookingId,
-        bookingRef: bookingResult.bookingRef,
-      }),
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            phone,
+            amount,
+            bookingId:  bookingResult.bookingId,
+            bookingRef: bookingResult.bookingRef,
+        }),
     });
-    const data = await res.json();
+
+    // Safe parse — never throws on empty/HTML response
+    const raw  = await res.text();
+    let data = {};
+    try { data = JSON.parse(raw); } catch (_) {
+        console.error("Non-JSON from /api/mpesa:", raw.slice(0, 300));
+        throw new Error("Server returned an invalid response. Check Cloudflare Function logs.");
+    }
 
     if (data.success) {
-      mpesaPayBtn.textContent = "✅ Check your phone!";
-      bookingData.mpesaPhone  = phone;
-      saveToStorage("joyalty_booking_draft", bookingData);
-      pollPayment(bookingResult.bookingId);
+        btn.textContent = "✅ Check your phone!";
+        pollPayment(bookingResult.bookingId);
     } else {
-      mpesaPayBtn.disabled    = false;
-      mpesaPayBtn.textContent = "Retry M-Pesa";
-      alert("M-Pesa error: " + (data.error || "Please try again."));
+        btn.disabled    = false;
+        btn.textContent = originalText;
+        // Show the actual server error — much easier to debug
+        alert("M-Pesa error: " + (data.error || data.detail || "Please try again."));
     }
-  } catch (err) {
-    mpesaPayBtn.disabled    = false;
-    mpesaPayBtn.textContent = "Pay with M-Pesa";
-    alert("Connection error. Please try again.");
-  }
+} catch (err) {
+    btn.disabled    = false;
+    btn.textContent = originalText;
+    alert("Error: " + err.message);
+}
 });
 
 // ── Poll for payment (sandbox: any response = success) ────────
