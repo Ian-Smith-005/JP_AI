@@ -1,94 +1,47 @@
 // functions/api/mpesa-callback.js
-// Safaricom posts here after the user interacts with the STK prompt
-//
-// SANDBOX MODE:
-//   ResultCode 0  = user entered PIN (success)
-//   ResultCode 1032 = user cancelled
-//   Both are treated as confirmed so we can verify end-to-end flow
-//
-// PRODUCTION: remove the sandbox block and only handle ResultCode === 0
-
 import { neon } from "@neondatabase/serverless";
+import { sendReceiptEmails } from "./send-receipt.js";
 
 export async function onRequestPost(context) {
   const { request, env } = context;
+  let body;
+  try { body = await request.json(); } catch (_) { return new Response("OK", { status: 200 }); }
 
-  try {
-    const sql  = neon(env.DATABASE_URL);
-    const body = await request.json();
+  const callback = body?.Body?.stkCallback;
+  if (!callback) return new Response("OK", { status: 200 });
 
-    const callback = body?.Body?.stkCallback;
-    if (!callback) return new Response("OK", { status: 200 });
+  const checkoutId = callback.CheckoutRequestID;
+  const resultCode = callback.ResultCode;
+  const SANDBOX    = !env.MPESA_SHORTCODE || env.MPESA_SHORTCODE.startsWith("#");
+  const isSuccess  = resultCode === 0 || (SANDBOX && resultCode === 1032);
 
-    const checkoutId = callback.CheckoutRequestID;
-    const resultCode = callback.ResultCode;
-    // 0 = paid, 1032 = cancelled — in sandbox both confirm the flow
+  const sql = neon(env.DATABASE_URL);
 
-    const isSandboxSuccess = resultCode === 0 || resultCode === 1032;
+  if (isSuccess) {
+    const items        = callback.CallbackMetadata?.Item || [];
+    const get          = (n) => items.find(i => i.Name === n)?.Value;
+    const mpesaReceipt = get("MpesaReceiptNumber") || `SANDBOX-${Date.now()}`;
+    const paidAmount   = get("Amount") || 0;
 
-    if (isSandboxSuccess) {
-      const items        = callback.CallbackMetadata?.Item || [];
-      const get          = name => items.find(i => i.Name === name)?.Value;
-      const mpesaReceipt = get("MpesaReceiptNumber") || `SANDBOX-${checkoutId}`;
-      const amount       = get("Amount")             || 0;
+    await sql`UPDATE payments SET status='completed', mpesa_receipt=${mpesaReceipt}, completed_at=NOW() WHERE mpesa_checkout_id=${checkoutId}`;
 
-      // Update payment → completed
-      await sql`
-        UPDATE payments
-        SET status        = 'completed',
-            mpesa_receipt = ${mpesaReceipt},
-            completed_at  = NOW()
-        WHERE mpesa_checkout_id = ${checkoutId}
-      `;
+    const [pay] = await sql`SELECT booking_id FROM payments WHERE mpesa_checkout_id=${checkoutId}`;
+    if (pay?.booking_id) {
+      const bid = pay.booking_id;
+      const [bk] = await sql`SELECT deposit_amount, total_price FROM bookings WHERE id=${bid}`;
+      const dep  = bk?.deposit_amount || paidAmount || 0;
 
-      // Get booking_id
-      const [payment] = await sql`
-        SELECT booking_id FROM payments WHERE mpesa_checkout_id = ${checkoutId}
-      `;
+      await sql`UPDATE bookings SET status='confirmed', updated_at=NOW() WHERE id=${bid}`;
+      await sql`UPDATE receipts SET deposit_paid=${dep}, balance_due=total_price-${dep}, payment_ref=${mpesaReceipt}, issued_at=NOW() WHERE booking_id=${bid}`;
 
-      if (payment?.booking_id) {
-        const bookingId = payment.booking_id;
-
-        // Get deposit amount from booking
-        const [booking] = await sql`
-          SELECT deposit_amount, total_price FROM bookings WHERE id = ${bookingId}
-        `;
-        const depositPaid = booking?.deposit_amount || amount || 0;
-
-        // Confirm booking
-        await sql`
-          UPDATE bookings
-          SET status = 'confirmed', updated_at = NOW()
-          WHERE id = ${bookingId}
-        `;
-
-        // Update receipt
-        await sql`
-          UPDATE receipts
-          SET deposit_paid = ${depositPaid},
-              balance_due  = total_price - ${depositPaid},
-              payment_ref  = ${mpesaReceipt},
-              issued_at    = NOW()
-          WHERE booking_id = ${bookingId}
-        `;
-      }
-
-    } else {
-      // Any other failure (not sandbox cancel) → mark failed
-      await sql`
-        UPDATE payments SET status = 'failed'
-        WHERE mpesa_checkout_id = ${checkoutId}
-      `;
+      const [receipt] = await sql`SELECT * FROM receipts WHERE booking_id=${bid}`;
+      if (receipt) sendReceiptEmails(env, receipt).catch(e => console.error("[callback] email err:", e.message));
     }
-
-    // Safaricom requires a 200 OK
-    return new Response(
-      JSON.stringify({ ResultCode: 0, ResultDesc: "Success" }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
-    );
-
-  } catch (err) {
-    console.error("mpesa-callback error:", err.message);
-    return new Response("Error", { status: 500 });
+  } else {
+    await sql`UPDATE payments SET status='failed' WHERE mpesa_checkout_id=${checkoutId}`;
   }
+
+  return new Response(JSON.stringify({ ResultCode: 0, ResultDesc: "Success" }), {
+    status: 200, headers: { "Content-Type": "application/json" }
+  });
 }
