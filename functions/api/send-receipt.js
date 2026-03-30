@@ -9,8 +9,8 @@ export async function sendReceiptEmails(env, receipt) {
     return;
   }
 
-  const adminEmail  = env.ADMIN_EMAIL || "joyaltyphotography254@gmail.com";
-  const fromAddress = env.FROM_EMAIL  || "onboarding@resend.dev"; // swap once domain verified
+  const adminEmail  = env.ADMIN_EMAIL;
+  const fromAddress = env.FROM_EMAIL; // swap once domain verified
 
   const {
     receipt_ref, booking_ref,
