@@ -53,6 +53,7 @@ const closeBookingBtn = document.getElementById("closeBooking");
 const clientPhoneEl   = document.getElementById("clientPhone");
 const mpesaPhoneEl    = document.getElementById("mpesaPhone");
 const mpesaPayBtn     = document.getElementById("mpesaPayBtn");
+const originalText = mpesaPayBtn.textContent;
 
 // ── localStorage ─────────────────────────────────────────────
 function saveToStorage(key, data) {
@@ -256,11 +257,24 @@ mpesaPayBtn?.addEventListener("click", async () => {
   const phone = mpesaPhoneEl?.value.trim() || bookingData.clientPhone;
   if (!phone) { alert("Please enter your M-Pesa phone number."); return; }
 
-  const { deposit } = calcPricing(
-    bookingData.serviceType,
-    bookingData.servicePackage || "Standard",
-    bookingData.extraServices  || "None"
-  );
+const { deposit } = calcPricing(
+  bookingData.serviceType,
+  bookingData.servicePackage || "Standard",
+  bookingData.extraServices  || "None"
+);
+
+const amount = deposit; // ✅ FIX
+
+const res = await fetch("/api/mpesa", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    phone,
+    amount,
+    bookingId:  bookingResult.bookingId,
+    bookingRef: bookingResult.bookingRef,
+  }),
+});
 
   mpesaPayBtn.disabled    = true;
   mpesaPayBtn.textContent = "Saving booking...";
@@ -301,17 +315,17 @@ try {
     }
 
     if (data.success) {
-        btn.textContent = "✅ Check your phone!";
+        mpesaPayBtn.textContent = "✅ Check your phone!";
         pollPayment(bookingResult.bookingId);
     } else {
-        btn.disabled    = false;
-        btn.textContent = originalText;
+        mpesaPayBtn.disabled    = false;
+        mpesaPayBtn.textContent = originalText;
         // Show the actual server error — much easier to debug
         alert("M-Pesa error: " + (data.error || data.detail || "Please try again."));
     }
 } catch (err) {
-    btn.disabled    = false;
-    btn.textContent = originalText;
+    mpesaPayBtn.disabled    = false;
+    mpesaPayBtn.textContent = originalText;
     alert("Error: " + err.message);
 }
 });
