@@ -283,18 +283,4 @@
         color:gold;
     }
 
-    /* FOOTER */
-    .footer{
-        background:darkcyan;
-        color:white;
-        padding:60px 0;
-    }
-
-    .footer ul{
-        list-style:none;
-        padding:0;
-    }
-
-    .footer li{
-        margin-bottom:8px;
-    }
+   

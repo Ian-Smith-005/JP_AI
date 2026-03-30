@@ -29,227 +29,10 @@
   <link rel="stylesheet" href="assets/css/toggletheme.css" />
   <link rel="stylesheet" href="assets/css/navbar.css" />
   <link rel="stylesheet" href="assets/css/preloader.css" />
+  <link rel="stylesheet" href="assets/css/footer.css">
+  <link rel="stylesheet" href="assets/css/about.css">
 
-  <!-- PAGE-SPECIFIC STYLES -->
-  <style>
-    /* ── About hero — same pattern as services.html margin-top:120px ── */
-    .about-hero {
-      margin-top: 120px;
-      padding: 80px 0 60px;
-      text-align: center;
-    }
-    .about-hero .hero-badge {
-      display: inline-block;
-      font-family: 'Quicksand', sans-serif;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      color: var(--accent, #c9a84c);
-      border: 1px solid var(--accent, #c9a84c);
-      border-radius: 50px;
-      padding: 5px 18px;
-      margin-bottom: 20px;
-    }
 
-    /* ── Stats row ── */
-    .stats-row {
-      padding: 48px 0;
-      border-top: 1px solid rgba(128,128,128,.15);
-      border-bottom: 1px solid rgba(128,128,128,.15);
-    }
-    .stat-box { text-align: center; }
-    .stat-box .stat-num {
-      font-family: 'Quintessential', cursive;
-      font-size: 2.6rem;
-      line-height: 1;
-    }
-    .stat-box .stat-label {
-      font-family: 'Quicksand', sans-serif;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      opacity: .55;
-      margin-top: 6px;
-    }
-
-    /* ── Story section ── */
-    .story-section { padding: 80px 0; }
-    .story-section img {
-      width: 100%;
-      border-radius: 8px;
-      object-fit: cover;
-      aspect-ratio: 4/5;
-    }
-
-    /* ── Value cards — reuse service-card style ── */
-    .values-section { padding: 80px 0; }
-
-    /* ── Team section ── */
-    .team-section { padding: 80px 0; }
-    .team-card-wrap {
-      position: relative;
-      overflow: hidden;
-      border-radius: 8px;
-    }
-    .team-card-wrap img {
-      width: 100%;
-      aspect-ratio: 3/4;
-      object-fit: cover;
-      display: block;
-      transition: transform .5s ease;
-      filter: grayscale(20%);
-    }
-    .team-card-wrap:hover img {
-      transform: scale(1.05);
-      filter: grayscale(0%);
-    }
-    .team-overlay {
-      position: absolute; bottom: 0; left: 0; right: 0;
-      padding: 24px 20px;
-      background: linear-gradient(transparent, rgba(0,0,0,.82));
-      color: #fff;
-    }
-    .team-overlay h5 {
-      font-family: 'Quintessential', cursive;
-      font-size: 1.3rem;
-      margin: 0;
-    }
-    .team-overlay span {
-      font-family: 'Quicksand', sans-serif;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      opacity: .7;
-    }
-
-    /* ── Policy accordion ── */
-    .policy-section { padding: 80px 0; }
-    .policy-accordion { display: flex; flex-direction: column; gap: 14px; }
-
-    details.policy-item {
-      border: 1px solid rgba(128,128,128,.2);
-      border-radius: 8px;
-      overflow: hidden;
-      transition: border-color .25s;
-    }
-    details.policy-item[open] {
-      border-color: var(--accent, #c9a84c);
-    }
-    details.policy-item summary {
-      list-style: none;
-      cursor: pointer;
-      padding: 22px 26px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      font-family: 'Quicksand', sans-serif;
-      font-weight: 600;
-      font-size: 1rem;
-      user-select: none;
-    }
-    details.policy-item summary::-webkit-details-marker { display: none; }
-
-    .policy-summary-left {
-      display: flex; align-items: center; gap: 16px;
-    }
-    .policy-summary-icon {
-      width: 42px; height: 42px;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: .95rem;
-      flex-shrink: 0;
-      transition: background .25s;
-    }
-    .policy-summary-icon.blue  { background: rgba(59,130,246,.12); color: #3b82f6; }
-    .policy-summary-icon.green { background: rgba(34,197,94,.12);  color: #22c55e; }
-    details.policy-item[open] .policy-summary-icon.blue  { background: rgba(59,130,246,.22); }
-    details.policy-item[open] .policy-summary-icon.green { background: rgba(34,197,94,.22); }
-
-    .policy-chevron {
-      font-size: .8rem;
-      opacity: .5;
-      transition: transform .3s ease;
-      flex-shrink: 0;
-    }
-    details.policy-item[open] .policy-chevron { transform: rotate(180deg); opacity: 1; }
-
-    .policy-body {
-      padding: 0 26px 26px;
-      border-top: 1px solid rgba(128,128,128,.12);
-    }
-    .policy-intro {
-      font-family: 'Quicksand', sans-serif;
-      font-size: .92rem;
-      line-height: 1.85;
-      opacity: .7;
-      padding: 18px 0 20px;
-    }
-    .policy-toc {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 8px 20px;
-      margin-bottom: 24px;
-    }
-    .policy-toc-item {
-      font-family: 'Quicksand', sans-serif;
-      font-size: .82rem;
-      font-weight: 600;
-      opacity: .6;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .policy-toc-item i { font-size: .65rem; opacity: .6; }
-
-    /* Refund table */
-    .refund-table {
-      width: 100%; border-collapse: collapse;
-      font-family: 'Quicksand', sans-serif;
-      font-size: .85rem;
-      margin-bottom: 24px;
-    }
-    .refund-table th {
-      padding: 10px 14px;
-      text-align: left;
-      font-weight: 600;
-      font-size: .78rem;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      opacity: .6;
-      border-bottom: 1px solid rgba(128,128,128,.2);
-    }
-    .refund-table td {
-      padding: 10px 14px;
-      border-bottom: 1px solid rgba(128,128,128,.1);
-      opacity: .75;
-    }
-    .refund-table td.refund-ok  { color: #16a34a; font-weight: 600; opacity: 1; }
-    .refund-table td.refund-no  { color: #dc2626; font-weight: 600; opacity: 1; }
-    .refund-table td.refund-partial { color: #d97706; font-weight: 600; opacity: 1; }
-
-    .policy-actions {
-      display: flex; gap: 12px; flex-wrap: wrap;
-    }
-
-    /* ── Notice box ── */
-    .notice-box {
-      border: 1px solid rgba(128,128,128,.2);
-      border-radius: 8px;
-      padding: 18px 22px;
-      display: flex; align-items: flex-start; gap: 14px;
-      margin-top: 16px;
-    }
-    .notice-box i { opacity: .5; margin-top: 2px; flex-shrink: 0; }
-    .notice-box p {
-      font-family: 'Quicksand', sans-serif;
-      font-size: .85rem;
-      line-height: 1.8;
-      opacity: .65;
-      margin: 0;
-    }
-  </style>
 </head>
 
 <body data-theme="light">
@@ -621,42 +404,166 @@
   </div>
 </div>
 
-<!-- FOOTER — same as index.html -->
-<footer id="contact" class="footer">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-4">
-        <h4>Joyalty Photography</h4>
-        <p>Capturing timeless moments through cinematic photography and professional storytelling.</p>
+
+
+<footer class="footer" id="contact">
+
+  <!-- Wave top -->
+  <div class="footer-wave">
+    <svg viewBox="0 0 1440 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" fill="currentColor" opacity=".06"/>
+    </svg>
+  </div>
+
+  <!-- Main columns -->
+  <div class="footer-body" id="footerBody">
+    <div class="container">
+      <div class="row g-5">
+
+        <!-- Brand + social -->
+        <div class="col-lg-4 col-md-6">
+          <a class="footer-brand" href="index.html">
+            <img src="https://joyaltyphotography.netlify.app/images/templatemo-logo.png" alt="Joyalty Logo">
+            <span class="footer-brand-name">JO<span>Y</span>ALTY</span>
+          </a>
+          <p class="footer-tagline">
+            Capturing timeless moments through cinematic photography and professional storytelling.
+            Based in Shanzu, Mombasa, Kenya.
+          </p>
+          <div class="footer-social">
+            <a href="#" class="si-instagram" aria-label="Instagram" title="Instagram">
+              <i class="fa-brands fa-instagram"></i>
+            </a>
+            <a href="#" class="si-facebook" aria-label="Facebook" title="Facebook">
+              <i class="fa-brands fa-facebook-f"></i>
+            </a>
+            <a href="https://wa.me/254XXXXXXXXX" class="si-whatsapp" aria-label="WhatsApp" title="WhatsApp" target="_blank" rel="noopener">
+              <i class="fa-brands fa-whatsapp"></i>
+            </a>
+            <a href="#" class="si-tiktok" aria-label="TikTok" title="TikTok">
+              <i class="fa-brands fa-tiktok"></i>
+            </a>
+            <a href="#" class="si-youtube" aria-label="YouTube" title="YouTube">
+              <i class="fa-brands fa-youtube"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Quick links -->
+        <div class="col-lg-2 col-md-3 col-6">
+          <div class="footer-col-title">Navigate</div>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="portfolio.html">Portfolio</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+
+        <!-- Services -->
+        <div class="col-lg-2 col-md-3 col-6">
+          <div class="footer-col-title">Services</div>
+          <ul class="footer-links">
+            <li><a href="services.html">Wedding Photography</a></li>
+            <li><a href="services.html">Portrait Sessions</a></li>
+            <li><a href="services.html">Commercial Shoots</a></li>
+            <li><a href="services.html">Event Coverage</a></li>
+            <li><a href="services.html">Engagement Shoots</a></li>
+            <li><a href="services.html">Family Photography</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact -->
+        <div class="col-lg-4 col-md-6">
+          <div class="footer-col-title">Contact Us</div>
+          <div class="footer-contact-item">
+            <i class="fa-solid fa-envelope"></i>
+            <a href="mailto:joyaltyphotography254@gmail.com">joyaltyphotography254@gmail.com</a>
+          </div>
+          <div class="footer-contact-item">
+            <i class="fa-solid fa-phone"></i>
+            <a href="tel:+254XXXXXXXXX">+254 XXX XXX XXX</a>
+          </div>
+          <div class="footer-contact-item">
+            <i class="fa-solid fa-location-dot"></i>
+            <span>Shanzu, Mombasa, Kenya</span>
+          </div>
+          <div class="footer-contact-item">
+            <i class="fa-regular fa-clock"></i>
+            <span>Mon – Sat &nbsp;·&nbsp; 9:00 AM – 7:00 PM</span>
+          </div>
+        </div>
+
+      </div><!-- /row -->
+
+      <!-- Newsletter strip -->
+      <div class="footer-newsletter">
+        <div class="row align-items-center g-3">
+          <div class="col-lg-5">
+            <div class="footer-newsletter-label">Stay in the loop</div>
+            <div class="footer-newsletter-title">Get photography tips &amp; offers</div>
+          </div>
+          <div class="col-lg-7">
+            <div class="footer-newsletter-form">
+              <input type="email" id="newsletterEmail" placeholder="Your email address" autocomplete="off">
+              <button class="btn primary-btn" onclick="subscribeNewsletter()">Subscribe</button>
+            </div>
+            <div id="newsletterMsg" style="font-size:.8rem;margin-top:8px;display:none;opacity:.65;font-family:'Quicksand',sans-serif"></div>
+          </div>
+        </div>
       </div>
-      <div class="col-lg-2">
-        <h5>Quick Links</h5>
-        <ul>
-          <li><a href="index.html">Home</a></li>
-          <li><a href="portfolio.html">Portfolio</a></li>
-          <li><a href="services.html">Services</a></li>
-          <li><a href="about.html">About</a></li>
-          <li><a href="contact.html">Contact</a></li>
-        </ul>
-      </div>
-      <div class="col-lg-3">
-        <h5>Legal</h5>
-        <ul>
-          <li><a href="assets/docs/Joyalty_Data_Protection_policy_PDF_2026.pdf" target="_blank">Data Protection Policy</a></li>
-          <li><a href="assets/docs/Joyalty_Refund_policy_PDF_2026.pdf" target="_blank">Refund &amp; Rescheduling Policy</a></li>
-        </ul>
-      </div>
-      <div class="col-lg-3">
-        <h5>Contact</h5>
-        <p>Email: joyaltyphotography254@gmail.com</p>
-        <p>Phone: +254 XXX XXX</p>
-        <p>Shanzu, Mombasa, Kenya</p>
+
+    </div><!-- /container -->
+  </div><!-- /footer-body -->
+
+  <!-- Bottom bar -->
+  <div class="footer-bottom">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <span>© 2026 Joyalty Photography. All rights reserved. Registered in Kenya.</span>
+        </div>
+        <div class="col-md-6">
+          <div class="footer-bottom-links">
+            <a href="about.html#policies">Privacy Policy</a>
+            <a href="about.html#policies">Refund Policy</a>
+            <a href="contact.html">Contact</a>
+          </div>
+        </div>
       </div>
     </div>
-    <hr />
-    <p class="text-center">© 2026 Joyalty Photography. Registered in Kenya.</p>
   </div>
+
 </footer>
+
+<!-- Footer entrance animation trigger -->
+<script>
+(function() {
+  const body = document.getElementById('footerBody');
+  if (!body) return;
+  const obs = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      body.classList.add('footer-visible');
+      obs.disconnect();
+    }
+  }, { threshold: 0.1 });
+  obs.observe(body);
+
+  window.subscribeNewsletter = function() {
+    const email = document.getElementById('newsletterEmail').value.trim();
+    const msg   = document.getElementById('newsletterMsg');
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+      msg.textContent = 'Please enter a valid email address.';
+      msg.style.display = 'block';
+      return;
+    }
+    msg.textContent = '✓ Thank you! We\'ll be in touch.';
+    msg.style.display = 'block';
+    document.getElementById('newsletterEmail').value = '';
+  };
+})();
+</script>
 
 <!-- SCRIPTS — same order as every page -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
