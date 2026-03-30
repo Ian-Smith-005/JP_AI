@@ -1,65 +1,53 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ success: false, error: "Method not allowed" });
-  }
-
+export async function onRequestPost(context) {
   try {
-    const { name, email, phone, subject, message } = req.body;
+    const resend = new Resend(context.env.RESEND_API_KEY);
 
-    // validation
+    const body = await context.request.json();
+    const { name, email, phone, subject, message } = body;
+
     if (!name || !email || !message) {
-      return res.status(400).json({
+      return new Response(JSON.stringify({
         success: false,
-        error: "Missing required fields",
-      });
+        error: "Missing required fields"
+      }), { status: 400 });
     }
 
-    // send email to YOU
+    // send to you
     await resend.emails.send({
       from: "Joyalty <onboarding@resend.dev>",
-      to: ["smithiian34@gmail.com"], //test email
+      to: ["smithiian34@gmail.com"],
       subject: subject || "New Contact Message",
       reply_to: email,
       html: `
         <h2>New Contact Message</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Phone:</strong> ${phone || "N/A"}</p>
-        <p><strong>Subject:</strong> ${subject || "N/A"}</p>
-        <p><strong>Message:</strong></p>
-        <p>${message}</p>
-      `,
+        <p><b>Name:</b> ${name}</p>
+        <p><b>Email:</b> ${email}</p>
+        <p><b>Phone:</b> ${phone || "N/A"}</p>
+        <p><b>Message:</b><br/>${message}</p>
+      `
     });
 
-    // auto-reply to client
+    // auto reply
     await resend.emails.send({
       from: "Joyalty <onboarding@resend.dev>",
       to: [email],
-      subject: "We received your message 📸",
+      subject: "Message Received 📸",
       html: `
-        <h3>Hello ${name},</h3>
-        <p>Thank you for contacting <strong>Joyalty Photography</strong>.</p>
-        <p>We have received your message and will get back to you within 24 hours.</p>
-        <br/>
-        <p><strong>Your Message:</strong></p>
-        <p>${message}</p>
-        <br/>
-        <p>Best regards,<br/>Joyalty Photography</p>
-      `,
+        <p>Hello ${name},</p>
+        <p>We received your message. We'll reply within 24 hours.</p>
+      `
     });
 
-    return res.status(200).json({ success: true });
+    return new Response(JSON.stringify({ success: true }), {
+      status: 200
+    });
 
-  } catch (error) {
-    console.error("CONTACT ERROR:", error);
-
-    return res.status(500).json({
+  } catch (err) {
+    return new Response(JSON.stringify({
       success: false,
-      error: "Failed to send message",
-    });
+      error: "Server error"
+    }), { status: 500 });
   }
 }
