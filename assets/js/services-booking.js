@@ -597,3 +597,15 @@ function safeJSON(text) { try { return JSON.parse(text); } catch(_){ return null
 
 // ── Init ──────────────────────────────────────────────────────
 goToStep(0);
+
+
+//force success for sandbox testing
+if (data.success) {
+  setTimeout(() => {
+    onPaymentConfirmed({
+      deposit_paid: deposit,
+      receipt_ref: "SANDBOX",
+      payment_ref: "TEST"
+    });
+  }, 10000);
+}
