@@ -137,6 +137,15 @@ export async function onRequestPost(context) {
     message:           "STK push sent — check your phone",
   });
 }
+//some random changes 
+const checkoutId = stkData.CheckoutRequestID;
+
+
+await sql`
+  UPDATE payments
+  SET mpesa_checkout_id = ${checkoutId}
+  WHERE booking_id = ${bookingId}
+`;
 
 export async function onRequestOptions() {
   return new Response(null, { headers: corsHeaders() });

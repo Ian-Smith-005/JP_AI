@@ -104,6 +104,24 @@ export async function onRequestPost(context) {
     )
   `;
 
+  //some tests
+  // ── Create payment record (CRITICAL) ─────────────────────
+await sql`
+  INSERT INTO payments (
+    booking_id,
+    amount,
+    payment_method,
+    status,
+    mpesa_checkout_id
+  ) VALUES (
+    ${booking.id},
+    ${depositAmount},
+    'mpesa',
+    'pending',
+    NULL
+  )
+`;
+
   return respond({
     success:        true,
     bookingRef,
