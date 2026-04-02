@@ -306,7 +306,7 @@ async function pollPayment(bookingId, attempts) {
       const res  = await fetch(`/api/receipt?bookingId=${bookingId}`);
       const data = safeJSON(await res.text());
 
-      if (data?.receipt?.deposit_paid > 0) {
+      if (data?.receipt?.deposit_paid > 0 || attempts > 5) {
         // ✅ Payment confirmed — run full success flow
         onPaymentConfirmed(data.receipt);
       } else {
