@@ -78,7 +78,7 @@ body[data-theme="dark"] .custom-nav {
     gap: 14px; /* IMPORTANT: spacing between toggle + hamburger */
     position: fixed;
     right: 0;
-    top: 1px;
+    top: 15px;
 }
 
 /* ================================
