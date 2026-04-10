@@ -14,18 +14,18 @@
 
 // ── Firebase config — replace with your real values ──────────
 const firebaseConfig = {
-  apiKey:            "YOUR_FIREBASE_API_KEY",
-  authDomain:        "YOUR_PROJECT.firebaseapp.com",
-  projectId:         "YOUR_PROJECT_ID",
-  storageBucket:     "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId:             "YOUR_APP_ID",
+  apiKey:            "AIzaSyA23Ne4ZmJGpGkeEOu3r6ePPx2vLwXKLl0",
+  authDomain:        "joyalty-admin.firebaseapp.com",
+  projectId:         "joyalty-admin",
+  storageBucket:     "joyalty-admin.firebasestorage.app",
+  messagingSenderId: "839017798819",
+  appId:             "1:839017798819:web:66cdb6298ee614a20f3316",
 };
 
 // ── Allowed admin emails — only these can access the dashboard
 // Add/remove emails here to control access
 const ALLOWED_ADMINS = [
-  "joyaltyphotography254@gmail.com",
+  "smithiian34@gmail.com",//test email 
   // "secondadmin@example.com",
 ];
 
