@@ -36,58 +36,50 @@
   </head>
 
   <body data-theme="light">
-    <!-- Preloader overlay --
-    <div id="preloader">
-        <img id="preloader-logo" src="https://joyaltyphotography.netlify.app/images/templatemo-logo.png" alt="Logo">
-    </div>
-  -->
+   
+    <!--NAVBAR-->
+    <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg fixed-top custom-nav">
+    <div class="container navbar-inner">
 
-    <nav class="navbar navbar-expand-lg fixed-top custom-nav">
-      <div class="container">
-          <a class="navbar-brand logo" href="index.html">
-          <img
-            src="https://joyaltyphotography.netlify.app/images/templatemo-logo.png"
-            width="35"
-          />
-          JO<span>Y</span>ALTY
-        </a>
+      <!-- LEFT: BRAND -->
+      <a class="navbar-brand logo" href="index.html">
+        <img class="block-img" src="https://joyaltyphotography.netlify.app/images/templatemo-logo.png" alt="">
+        JO<span>Y</span>ALTY
+      </a>
 
-        <button
-          class="navbar-toggler hamburger"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navMenu"
-        >
+      <!-- CENTER: NAV LINKS -->
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav nav-center">
+          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="services.html">Services</a></li>
+          <li class="nav-item"><a class="nav-link active" href="portfolio.html">Portfolio</a></li>
+          <li class="nav-item"><a class="nav-link" href="shop.html">Shop</a></li>
+          <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+
+      <!-- RIGHT: CONTROLS (ORDER FIXED) -->
+      <div class="nav-right">
+
+        <!-- Hamburger FIRST -->
+        <button class="navbar-toggler hamburger" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
           <span></span>
           <span></span>
           <span></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="navMenu">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="index.html">Home</a>
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link active" href="#">Portfolio</a>
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link" href="services.html">Services</a>
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link" href="contact.html">Contact</a>
-            </li>
-          </ul>
-        </div>
-
-        <button id="themeToggle" class="theme-btn ms-3">
+        <!-- Theme toggle SECOND (right side of hamburger) -->
+        <button id="themeToggle" class="theme-btn">
           <i class="fas fa-sun"></i>
         </button>
+
       </div>
-    </nav>
+
+    </div>
+
+  </nav>
 
     <!-- HERO -->
 

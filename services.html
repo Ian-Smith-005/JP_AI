@@ -37,36 +37,48 @@
     </div>
 -->
     <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-lg fixed-top custom-nav">
-        <div class="container">
-            <a class="navbar-brand logo" href="index.html">
-                <img src="https://joyaltyphotography.netlify.app/images/templatemo-logo.png" width="35" />
-                JO<span>Y</span>ALTY
-            </a>
-            <button class="navbar-toggler hamburger" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
-                <span></span> <span></span> <span></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navMenu">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.html#home">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="portfolio.html">Portfolio</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="services.html">Services</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="contact.html">Contact</a>
-                    </li>
-                </ul>
-            </div>
-            <button id="themeToggle" class="theme-btn ms-3">
-                <i class="fas fa-sun"></i>
-            </button>
-        </div>
-    </nav>
+ <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg fixed-top custom-nav">
+    <div class="container navbar-inner">
+
+      <!-- LEFT: BRAND -->
+      <a class="navbar-brand logo" href="index.html">
+        <img class="block-img" src="https://joyaltyphotography.netlify.app/images/templatemo-logo.png" alt="">
+        JO<span>Y</span>ALTY
+      </a>
+
+      <!-- CENTER: NAV LINKS -->
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav nav-center">
+          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link active" href="services.html">Services</a></li>
+          <li class="nav-item"><a class="nav-link" href="portfolio.html">Portfolio</a></li>
+          <li class="nav-item"><a class="nav-link" href="shop.html">Shop</a></li>
+          <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+
+      <!-- RIGHT: CONTROLS (ORDER FIXED) -->
+      <div class="nav-right">
+
+        <!-- Hamburger FIRST -->
+        <button class="navbar-toggler hamburger" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <!-- Theme toggle SECOND (right side of hamburger) -->
+        <button id="themeToggle" class="theme-btn">
+          <i class="fas fa-sun"></i>
+        </button>
+
+      </div>
+
+    </div>
+
+  </nav>
     <!-- SERVICES SECTION -->
     <section id="services-section" class="services" style="margin-top:120px">
         <div class="container text-center">

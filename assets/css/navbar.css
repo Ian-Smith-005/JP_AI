@@ -1,37 +1,56 @@
-/* =====================================================
-   NAVBAR STYLES - Fixed Mobile Hamburger
-===================================================== */
-
+/* ================================
+   BASE NAVBAR
+================================ */
 .custom-nav {
-    background: white;
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.4s ease;
+    background: #fff;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.1);
     padding: 12px 0;
     z-index: 1050;
+    transition: background 0.4s ease;
 }
 
 body[data-theme="dark"] .custom-nav {
     background: #1e2937;
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.4);
 }
 
-/* Logo */
-.navbar-brand {
-    font-family: 'Quintessential', serif;
-    font-size: 1.45rem;
+
+/* ================================
+   LEFT - LOGO
+================================ */
+.navbar-brand.logo {
     display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Quintessential', serif;
+}
+.logo span{
+    color: #c9a24a;
+}
+/* ================================
+   FLEX LAYOUT CONTROL
+================================ */
+.navbar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+
+
+/* ================================
+   CENTER NAV
+================================ */
+.nav-center {
+    display: flex;
+    gap: 22px;
+    margin: 0 auto;
     align-items: center;
 }
 
-.logo span {
-    color: #c9a24a;
-}
-
-/* Nav Links */
 .nav-link {
     position: relative;
     font-weight: 500;
-    margin: 0 8px;
 }
 
 .nav-link::after {
@@ -41,8 +60,8 @@ body[data-theme="dark"] .custom-nav {
     bottom: -4px;
     width: 0;
     height: 2px;
-    background: #0d9488;
-    transition: width 0.3s ease;
+    background: #c9a24a;
+    transition: 0.3s;
 }
 
 .nav-link:hover::after,
@@ -50,33 +69,54 @@ body[data-theme="dark"] .custom-nav {
     width: 100%;
 }
 
-/* Hamburger Button */
+/* ================================
+   RIGHT SIDE (HAMBURGER + THEME)
+================================ */
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 14px; /* IMPORTANT: spacing between toggle + hamburger */
+    position: fixed;
+    right: 0;
+    top: 1px;
+}
+
+/* ================================
+   HAMBURGER
+================================ */
 .navbar-toggler.hamburger {
-    border: none;
-    background: transparent;
-    padding: 10px;
+    display: none; /* hidden on desktop */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     width: 44px;
     height: 44px;
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    border: none;
+    background: transparent;
     gap: 5px;
 }
 
 .hamburger span {
-    display: block;
-    width: 28px;
+    width: 26px;
     height: 3px;
     background: #222;
     border-radius: 3px;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: 0.3s;
 }
 
 body[data-theme="dark"] .hamburger span {
     background: #e2e8f0;
 }
 
+/* ================================
+   THEME BUTTON
+================================ */
+.theme-btn {
+    border: none;
+    background: transparent;
+    font-size: 18px;
+    cursor: pointer;
+}
 /* Hamburger Animation */
 .hamburger.open span:nth-child(1) {
     transform: rotate(45deg) translate(5px, 5px);
@@ -87,41 +127,44 @@ body[data-theme="dark"] .hamburger span {
 .hamburger.open span:nth-child(3) {
     transform: rotate(-45deg) translate(6px, -6px);
 }
-
-/* Mobile Menu */
-.navbar-collapse {
-    transition: all 0.4s ease;
+/* ================================
+   DESKTOP FIX (IMPORTANT)
+================================ */
+@media (min-width: 992px) {
+    .navbar-collapse {
+        display: flex !important;
+        flex-basis: auto;
+    }
 }
 
+/* ================================
+   MOBILE VIEW
+================================ */
 @media (max-width: 991px) {
+
+    /* hide center menu by default (bootstrap handles collapse) */
+    .nav-center {
+        flex-direction: column;
+        gap: 12px;
+        margin: 10px 0;
+    }
+
+    /* show hamburger */
+    .navbar-toggler.hamburger {
+        display: flex;
+        
+    }
+
+    /* dropdown styling */
     .navbar-collapse {
-        background: white;
-        padding: 20px;
+        background: #fff;
+        padding: 15px;
         border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
         margin-top: 10px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     }
 
     body[data-theme="dark"] .navbar-collapse {
         background: #1e2937;
-    }
-
-    .nav-link {
-        margin: 8px 0;
-        font-size: 1.05rem;
-    }
-}
-
-/* Small fix for very small screens */
-@media (max-width: 576px) {
-    .navbar-brand {
-        font-size: 1.3rem;
-    }
-}
-
-@media (max-width: 991px) {
-    .navbar-toggler.hamburger {
-        display: flex;
-        margin-left: auto; /* pushes it to the right */
     }
 }
