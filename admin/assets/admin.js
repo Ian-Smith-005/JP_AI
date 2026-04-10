@@ -2,65 +2,77 @@
 // JOYALTY ADMIN — admin.js (inline)
 // ════════════════════════════════════════════════════════════
 
-// ── Auth ────────────────────────────────────────────────────
-// Credentials stored client-side for demo.
-// For production: validate against /api/admin-auth endpoint
-// which checks against hashed values in env vars.
-const ADMIN_EMAIL    = "joyaltyphotography254@gmail.com";
-const ADMIN_PASSCODE = "Joyalty@2026"; // Change this — move to /api/admin-auth
+// ── Auth — Firebase ──────────────────────────────────────────
+// Credentials managed in Firebase console (not hardcoded here).
+// See admin/auth.js for Firebase config setup instructions.
 
-let currentUser = null;
-let allBookings  = [];
-let allClients   = [];
-let chatMode     = 'bot'; // 'bot' | 'live'
+let currentUser      = null;
+let allBookings      = [];
+let allClients       = [];
+let chatMode         = 'bot';
 let chatConversation = [];
 
-function doLogin() {
-  const email = document.getElementById('loginEmail').value.trim();
-  const pass  = document.getElementById('loginPass').value;
-  const errEl = document.getElementById('loginError');
-  const btn   = document.getElementById('loginBtnText');
+function _showApp(user) {
+  currentUser = user;
+  const initials = (user.displayName || user.email || 'A')[0].toUpperCase();
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('adminApp').style.display   = 'flex';
+  document.getElementById('adminNameDisplay').textContent    = user.displayName || user.email.split('@')[0];
+  document.getElementById('adminAvatarInitial').textContent  = initials;
+  initDashboard();
+}
 
-  errEl.style.display = 'none';
-
-  if (email === ADMIN_EMAIL && pass === ADMIN_PASSCODE) {
-    currentUser = { email, name: "Admin" };
-    sessionStorage.setItem('joyalty_admin', JSON.stringify(currentUser));
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('adminApp').style.display   = 'flex';
-    document.getElementById('adminNameDisplay').textContent = 'Admin';
-    document.getElementById('adminAvatarInitial').textContent = 'A';
-    initDashboard();
-  } else {
-    errEl.textContent = 'Incorrect email or passcode. Please try again.';
-    errEl.style.display = 'block';
+function _showLogin(errorMsg) {
+  document.getElementById('adminApp').style.display   = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  if (errorMsg) {
+    const e = document.getElementById('loginError');
+    e.textContent = errorMsg; e.style.display = 'block';
   }
 }
 
-function doLogout() {
-  sessionStorage.removeItem('joyalty_admin');
+async function doLogin() {
+  const email  = document.getElementById('loginEmail').value.trim();
+  const pass   = document.getElementById('loginPass').value;
+  const errEl  = document.getElementById('loginError');
+  const btnTxt = document.getElementById('loginBtnText');
+
+  errEl.style.display = 'none';
+  if (!email || !pass) { errEl.textContent = 'Enter your email and password.'; errEl.style.display='block'; return; }
+
+  btnTxt.innerHTML = '<span class="spinner"></span>';
+
+  try {
+    // Uses Firebase — credentials live in Firebase Authentication console
+    const user = await window.joyaltyAuth.firebaseSignIn(email, pass);
+    _showApp(user);
+  } catch (err) {
+    btnTxt.textContent = 'Sign In';
+    const msg = err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found'
+      ? 'Incorrect email or password.'
+      : err.message || 'Login failed. Please try again.';
+    errEl.textContent = msg; errEl.style.display = 'block';
+  }
+}
+
+async function doLogout() {
+  await window.joyaltyAuth.firebaseSignOut().catch(()=>{});
   currentUser = null;
-  document.getElementById('adminApp').style.display   = 'none';
-  document.getElementById('loginScreen').style.display = 'flex';
+  _showLogin();
   document.getElementById('loginEmail').value = '';
   document.getElementById('loginPass').value  = '';
 }
 
-// Enter key on login
+// Enter key on password field
 document.getElementById('loginPass').addEventListener('keypress', e => {
   if (e.key === 'Enter') doLogin();
 });
 
-// Auto-login if session exists
-(function() {
-  const saved = sessionStorage.getItem('joyalty_admin');
-  if (saved) {
-    currentUser = JSON.parse(saved);
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('adminApp').style.display   = 'flex';
-    initDashboard();
-  }
-})();
+// Check Firebase auth state on load (persists across refreshes)
+window.joyaltyAuth.checkAuthState(
+  user  => _showApp(user),
+  ()    => _showLogin()
+);
 
 // ── Tab navigation ───────────────────────────────────────────
 const TAB_TITLES = {

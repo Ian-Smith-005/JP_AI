@@ -2,19 +2,25 @@
 import { neon } from "@neondatabase/serverless";
 
 export async function onRequestGet(context) {
-  const { env } = context;
-  if (!env.DATABASE_URL) return json({ error: "DATABASE_URL not set" }, 500);
+  var env = context.env;
+  if (!env.DATABASE_URL) { return j({ error: "DATABASE_URL not set" }, 500); }
   try {
-    const sql = neon(env.DATABASE_URL);
-    const clients = await sql`SELECT * FROM clients ORDER BY created_at DESC`;
-    return json({ clients });
+    var sql  = neon(env.DATABASE_URL);
+    var rows = await sql`SELECT * FROM clients ORDER BY created_at DESC`;
+    return j({ clients: rows });
   } catch (err) {
-    return json({ error: err.message }, 500);
+    return j({ error: err.message }, 500);
   }
 }
 
 export async function onRequestOptions() {
   return new Response(null, { headers: cors() });
 }
-function json(d, s=200) { return new Response(JSON.stringify(d),{status:s,headers:cors()}); }
-function cors() { return {"Content-Type":"application/json","Access-Control-Allow-Origin":"*"}; }
+
+function j(data, status) {
+  if (!status) { status = 200; }
+  return new Response(JSON.stringify(data), { status: status, headers: cors() });
+}
+function cors() {
+  return { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" };
+}

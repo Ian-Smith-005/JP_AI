@@ -1,0 +1,326 @@
+/* ============================================================
+   JOYALTY PHOTOGRAPHY — buttons.css
+   Unified button system. Link AFTER landingpage.css on every page.
+============================================================ */
+:root {
+  --btn-r: 50px;
+  --btn-pv: 11px;
+  --btn-ph: 26px;
+  --btn-f: "Quicksand", sans-serif;
+  --btn-fw: 700;
+  --btn-fs: 0.9rem;
+  --btn-ls: 0.04em;
+  --btn-tr:
+    background 0.2s, color 0.2s, border-color 0.2s, transform 0.15s,
+    box-shadow 0.2s;
+  --c-pri: #1a1a2e;
+  --c-pri-t: #fff;
+  --c-pri-h: #2e2e50;
+  --c-pri-s: rgba(26, 26, 46, 0.25);
+  --c-out-b: #1a1a2e;
+  --c-out-t: #1a1a2e;
+  --c-out-hb: #1a1a2e;
+  --c-out-ht: #fff;
+}
+[data-theme="dark"] {
+  --c-pri: #e2e8f0;
+  --c-pri-t: #1a1a2e;
+  --c-pri-h: #cbd5e1;
+  --c-pri-s: rgba(0, 0, 0, 0.35);
+  --c-out-b: rgba(226, 232, 240, 0.55);
+  --c-out-t: #e2e8f0;
+  --c-out-hb: #e2e8f0;
+  --c-out-ht: #1a1a2e;
+}
+
+/* Primary */
+.btn.primary-btn,
+.primary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: var(--btn-pv) var(--btn-ph);
+  border-radius: var(--btn-r);
+  background: var(--c-pri);
+  color: var(--c-pri-t) !important;
+  font-family: var(--btn-f);
+  font-weight: var(--btn-fw);
+  font-size: var(--btn-fs);
+  letter-spacing: var(--btn-ls);
+  border: 2px solid transparent;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: var(--btn-tr);
+  box-shadow: 0 4px 16px var(--c-pri-s);
+  line-height: 1;
+}
+.btn.primary-btn:hover,
+.primary-btn:hover {
+  background: var(--c-pri-h);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px var(--c-pri-s);
+}
+.btn.primary-btn:active,
+.primary-btn:active {
+  transform: translateY(0);
+}
+.btn.primary-btn:disabled,
+.primary-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Outline */
+.btn.outline-btn,
+.outline-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: var(--btn-pv) var(--btn-ph);
+  border-radius: var(--btn-r);
+  background: transparent;
+  color: var(--c-out-t) !important;
+  font-family: var(--btn-f);
+  font-weight: var(--btn-fw);
+  font-size: var(--btn-fs);
+  letter-spacing: var(--btn-ls);
+  border: 2px solid var(--c-out-b);
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: var(--btn-tr);
+  line-height: 1;
+}
+.btn.outline-btn:hover,
+.outline-btn:hover {
+  background: var(--c-out-hb);
+  color: var(--c-out-ht) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px var(--c-pri-s);
+}
+.btn.outline-btn:active,
+.outline-btn:active {
+  transform: translateY(0);
+}
+
+/* Section btn = primary alias */
+.btn.section-btn,
+.section-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: var(--btn-pv) var(--btn-ph);
+  border-radius: var(--btn-r);
+  background: var(--c-pri);
+  color: var(--c-pri-t) !important;
+  font-family: var(--btn-f);
+  font-weight: var(--btn-fw);
+  font-size: var(--btn-fs);
+  letter-spacing: var(--btn-ls);
+  border: 2px solid transparent;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: var(--btn-tr);
+  box-shadow: 0 4px 16px var(--c-pri-s);
+  line-height: 1;
+}
+.btn.section-btn:hover,
+.section-btn:hover {
+  background: var(--c-pri-h);
+  transform: translateY(-2px);
+}
+
+/* Start booking — clean pill, hides Uiverse SVG children */
+.start-booking {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: var(--btn-r);
+  background: var(--c-pri);
+  color: var(--c-pri-t);
+  font-family: var(--btn-f);
+  font-weight: var(--btn-fw);
+  font-size: 0.85rem;
+  border: 2px solid transparent;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 14px;
+  transition: var(--btn-tr);
+  box-shadow: 0 4px 16px var(--c-pri-s);
+  line-height: 1;
+}
+.start-booking::before {
+  content: "\f073";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  font-size: 0.82rem;
+}
+.start-booking:hover {
+  background: var(--c-pri-h);
+  transform: translateY(-2px);
+}
+.start-booking > div {
+  display: none !important;
+}
+
+/* Theme toggle */
+.theme-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid rgba(128, 128, 128, 0.25);
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  transition: var(--btn-tr);
+}
+.theme-btn:hover {
+  border-color: rgba(128, 128, 128, 0.55);
+  transform: rotate(20deg) scale(1.1);
+}
+
+/* Chat send */
+#sendBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--c-pri);
+  color: var(--c-pri-t);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  flex-shrink: 0;
+  transition: var(--btn-tr);
+}
+#sendBtn:hover {
+  background: var(--c-pri-h);
+  transform: scale(1.1);
+}
+
+/* Danger */
+.btn.primary-btn.btn-danger,
+.primary-btn.btn-danger {
+  background: #dc2626;
+  box-shadow: 0 4px 16px rgba(220, 38, 38, 0.25);
+}
+.btn.primary-btn.btn-danger:hover,
+.primary-btn.btn-danger:hover {
+  background: #b91c1c;
+  box-shadow: 0 8px 24px rgba(220, 38, 38, 0.3);
+}
+
+/* Sizes */
+.btn-sm.primary-btn,
+.primary-btn.btn-sm,
+.btn-sm.outline-btn,
+.outline-btn.btn-sm {
+  padding: 8px 18px;
+  font-size: 0.8rem;
+}
+.btn-lg.primary-btn,
+.primary-btn.btn-lg,
+.btn-lg.outline-btn,
+.outline-btn.btn-lg {
+  padding: 14px 36px;
+  font-size: 1rem;
+}
+
+/* Booking form nav */
+#nextStep {
+  min-width: 110px;
+}
+#prevStep {
+  background: transparent !important;
+  color: var(--c-out-t) !important;
+  border: 2px solid var(--c-out-b) !important;
+  box-shadow: none !important;
+}
+#prevStep:hover {
+  background: var(--c-out-hb) !important;
+  color: var(--c-out-ht) !important;
+}
+#resetForm {
+  background: transparent !important;
+  color: #dc2626 !important;
+  border: 2px solid rgba(220, 38, 38, 0.35) !important;
+  box-shadow: none !important;
+}
+#resetForm:hover {
+  background: rgba(220, 38, 38, 0.06) !important;
+  border-color: #dc2626 !important;
+}
+#mpesaPayBtn {
+  width: 100%;
+}
+
+/* Modal buttons */
+#confirmReset,
+#confirmDelete {
+  background: #dc2626;
+  color: #fff;
+  border: none;
+  border-radius: var(--btn-r);
+  font-family: var(--btn-f);
+  font-weight: var(--btn-fw);
+  transition: var(--btn-tr);
+}
+#confirmReset:hover,
+#confirmDelete:hover {
+  background: #b91c1c;
+  transform: translateY(-1px);
+}
+#cancelReset,
+#cancelDelete {
+  background: transparent;
+  border: 2px solid rgba(128, 128, 128, 0.25);
+  border-radius: var(--btn-r);
+  font-family: var(--btn-f);
+  font-weight: var(--btn-fw);
+  transition: var(--btn-tr);
+}
+#cancelReset:hover,
+#cancelDelete:hover {
+  border-color: rgba(128, 128, 128, 0.5);
+  background: rgba(128, 128, 128, 0.06);
+}
+
+/* Bootstrap overrides */
+.btn-primary,
+.btn-success,
+.btn-outline-secondary,
+.btn-danger,
+.btn-secondary {
+  border-radius: var(--btn-r) !important;
+  font-family: var(--btn-f) !important;
+  font-weight: var(--btn-fw) !important;
+  transition: var(--btn-tr) !important;
+}
+
+@media (max-width: 480px) {
+  :root {
+    --btn-pv: 10px;
+    --btn-ph: 20px;
+    --btn-fs: 0.85rem;
+  }
+  .btn-lg.primary-btn,
+  .btn-lg.outline-btn {
+    padding: 12px 24px;
+    font-size: 0.9rem;
+  }
+}
