@@ -3,7 +3,7 @@ AOS.init({ duration: 650, once: true });
 // ── Product catalogue ─────────────────────────────────────────
 const PRODUCTS = [
   { id:1,  name:"Classic Wood Frame",     category:"frames",      price:3500,  desc:"Handcrafted mahogany frame. Available A4–A1.",      img:"https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=400" },
-  { id:2,  name:"Floating Acrylic Frame", category:"frames",      price:6500,  desc:"Museum-quality acrylic mount. Crystal-clear finish.", img:"https://images.unsplash.com/photo-1580130732478-4e339fb33746?w=400" },
+  { id:2,  name:"Floating Acrylic Frame", category:"frames",      price:6500,  desc:"Museum-quality acrylic mount. Crystal-clear finish.", img:"https://images.unsplash.com/photo-1711014476536-0edbcadb9d71?w=400" },
   { id:3,  name:"Black Metal Frame",      category:"frames",      price:2800,  desc:"Slim brushed aluminium. Suits modern interiors.",     img:"https://images.unsplash.com/photo-1584824486509-112e4181ff6b?w=400" },
   { id:4,  name:"Canvas Print – A3",      category:"prints",      price:2200,  desc:"Gallery-wrapped canvas, ready to hang. A3 size.",     img:"https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400" },
   { id:5,  name:"Lustre Print – A4",      category:"prints",      price:850,   desc:"Professional lustre finish, vibrant colours.",        img:"https://images.unsplash.com/photo-1533158326339-7f3cf2404354?w=400" },

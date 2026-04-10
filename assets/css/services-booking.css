@@ -1,13 +1,26 @@
 /* ============================================================
    JOYALTY — services-booking.css
-   Enhanced CSS: proper scaling at all breakpoints,
-   smoother transitions, polished form UX
+   Final Enhanced Version with Theme Support & Better Progress Bar
 ============================================================ */
 
 /* ── Booking progress section ── */
 .booking-progress {
   display: none;
-  padding: 40px 0 60px;
+  padding: 40px 0 80px;
+           /* Supports light & dark mode */
+  transition: background 0.4s ease;
+}
+
+/* ── Main Booking Container ── */
+#bookingForm {
+  background: var(--c-surface);
+  border-radius: 18px;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.1);
+  padding: 36px 32px;
+  max-width: 840px;
+  margin: 0 auto;
+  border: 1px solid var(--c-border);
+  transition: all 0.4s ease;
 }
 
 /* ── Booking close button ── */
@@ -15,299 +28,279 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   cursor: pointer;
-  opacity: .55;
-  transition: opacity .2s;
-  font-size: 1.2rem;
+  opacity: 0.7;
+  transition: all .25s ease;
+  font-size: 1.4rem;
 }
-.booking-close:hover { opacity: 1; }
+.booking-close:hover {
+  opacity: 1;
+  transform: rotate(90deg);
+}
 
-/* ── Section show/hide transitions ── */
-#services-section {
-  transition: opacity .4s ease, transform .4s ease;
-}
+/* ── Section Transitions ── */
 #services-section.hidden {
   opacity: 0;
-  transform: translateY(8px);
+  transform: translateY(15px);
   pointer-events: none;
+  transition: all .4s ease;
 }
+
 #booking-form-section {
   opacity: 0;
-  transform: translateY(12px);
-  transition: opacity .4s ease, transform .4s ease;
+  transform: translateY(25px);
+  transition: all .5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 #booking-form-section.active {
   opacity: 1;
   transform: translateY(0);
 }
 
-/* ── Booking title ── */
+/* ── Booking Title ── */
 .booking-title {
   font-family: 'Quintessential', cursive;
-  font-size: clamp(1.4rem, 4vw, 2rem);
-  margin-bottom: 28px;
+  font-size: clamp(1.55rem, 4.5vw, 2.25rem);
+  text-align: center;
+  margin-bottom: 36px;
+  color: var(--c-text);
 }
 
-/* ── Progress bar ── */
+/* ── Progress Bar - Well Positioned & Modern ── */
 .progress-wrapper {
   position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 40px;
-  padding: 0 8px;
+  margin-bottom: 48px;
+  padding: 0 20px;
 }
+
 .progress-line-bg {
   position: absolute;
-  left: 0; right: 0;
-  height: 2px;
-  background: rgba(128,128,128,.2);
-  top: 50%; transform: translateY(-50%);
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--c-border);
+  top: 50%;
+  transform: translateY(-50%);
   z-index: 0;
+  border-radius: 4px;
 }
+
 .progress-line {
   position: absolute;
   left: 0;
-  height: 2px;
-  top: 50%; transform: translateY(-50%);
-  width: 0;
-  transition: width .4s ease;
+  height: 4px;
+  top: 30%;
+  transform: translateY(-50%);
+  background: linear-gradient(90deg, #0d9488, #14b8a6);
+  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   z-index: 1;
+  border-radius: 4px;
 }
+
 .progress-step {
   position: relative;
   z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 9px;
+  min-width: 70px;
 }
+
 .progress-step span {
-  width: 34px;
-  height: 34px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
-  border: 2px solid rgba(128,128,128,.25);
+  border: 3px solid var(--c-border);
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: 'Quicksand', sans-serif;
-  font-size: .8rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  transition: all .3s ease;
+  background: var(--c-surface);
+  color: var(--c-muted);
+  transition: all 0.4s ease;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
 }
+
+.progress-step.active span {
+  border-color: #0d9488;
+  background: #0d9488;
+  color: white;
+  box-shadow: 0 0 0 6px rgba(13, 148, 136, 0.25);
+}
+
+.progress-step.completed span {
+  background: #0d9488;
+  color: white;
+  border-color: #0d9488;
+}
+
 .progress-step p {
   font-family: 'Quicksand', sans-serif;
-  font-size: .7rem;
+  font-size: 0.73rem;
   font-weight: 600;
-  letter-spacing: .06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  opacity: .45;
-  transition: opacity .3s;
-  white-space: nowrap;
+  color: var(--c-muted);
+  margin: 0;
+  transition: color 0.3s;
 }
-.progress-step.active span  { border-color: transparent; }
-.progress-step.active p     { opacity: 1; }
-.progress-step.completed p  { opacity: .7; }
 
-/* ── Form steps ── */
+.progress-step.active p {
+  color: var(--c-text);
+}
+
+/* ── Form Steps ── */
 .form-step {
   display: none;
-  animation: stepIn .3s ease;
+  animation: stepIn 0.45s ease forwards;
 }
 .form-step.active { display: block; }
-@keyframes stepIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+
+@keyframes stepIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
 .form-step h4 {
-  font-family: 'Quicksand', sans-serif;
-  font-weight: 700;
-  font-size: 1.05rem;
-  margin-bottom: 20px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgba(128,128,128,.15);
+  font-family: 'Quintessential', cursive;
+  font-size: 1.3rem;
+  margin-bottom: 24px;
+  color: var(--c-text);
 }
 
-/* ── Form controls ── */
+/* ── Form Controls ── */
 .form-control {
   font-family: 'Quicksand', sans-serif;
-  font-size: .9rem;
-  border-radius: 8px;
-  transition: border-color .2s, box-shadow .2s;
+  font-size: 0.96rem;
+  border-radius: 10px;
+  padding: 14px 16px;
+  border: 1.6px solid var(--c-border);
+  background: var(--c-surface);
+  color: var(--c-text);
+  transition: all 0.3s ease;
 }
+
 .form-control:focus {
-  box-shadow: 0 0 0 3px rgba(128,128,128,.12);
+  border-color: #0d9488;
+  box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.18);
+  outline: none;
 }
+
 label {
   font-family: 'Quicksand', sans-serif;
-  font-size: .78rem;
+  font-size: 0.8rem;
   font-weight: 700;
-  letter-spacing: .06em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  opacity: .55;
-  margin-bottom: 5px;
+  color: var(--c-muted);
+  margin-bottom: 7px;
+  display: block;
 }
 
-/* ── Payment info box ── */
+/* ── Payment Info ── */
 .payment-info {
-  background: rgba(128,128,128,.06);
-  border: 1px solid rgba(128,128,128,.15);
-  border-radius: 10px;
-  padding: 16px 18px;
-  margin-bottom: 18px;
+  background: rgba(13, 148, 136, 0.07);
+  border: 1px solid rgba(13, 148, 136, 0.25);
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-bottom: 24px;
   font-family: 'Quicksand', sans-serif;
-  font-size: .88rem;
-  line-height: 1.85;
 }
 
-/* ── M-Pesa pay button ── */
+/* ── M-Pesa Button ── */
 #mpesaPayBtn {
   font-family: 'Quicksand', sans-serif;
   font-weight: 700;
   border-radius: 50px;
-  padding: 12px 28px;
-  font-size: .92rem;
-  transition: opacity .2s, transform .15s;
+  padding: 15px 32px;
+  font-size: 1.02rem;
   width: 100%;
+  background: linear-gradient(135deg, #0d9488, #14b8a6);
+  color: white;
+  border: none;
+  box-shadow: 0 8px 25px rgba(13, 148, 136, 0.35);
+  transition: all 0.3s ease;
 }
-#mpesaPayBtn:disabled { opacity: .65; cursor: not-allowed; }
-#mpesaPayBtn:not(:disabled):hover { opacity: .88; transform: translateY(-1px); }
 
-/* ── Form navigation ── */
+#mpesaPayBtn:hover:not(:disabled) {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(13, 148, 136, 0.45);
+}
+
+/* ── Navigation ── */
 .form-navigation {
   display: flex;
-  gap: 10px;
-  margin-top: 24px;
+  gap: 12px;
+  margin-top: 36px;
   flex-wrap: wrap;
 }
-.form-navigation .btn { font-family: 'Quicksand', sans-serif; font-weight: 700; border-radius: 50px; padding: 10px 24px; }
-.form-navigation #nextStep { margin-left: auto; }
 
-/* ── Success screen ── */
-.success-screen {
+.form-navigation .btn {
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 700;
+  border-radius: 50px;
+  padding: 12px 26px;
+}
+
+/* ── Success & Receipt Screens ── */
+.success-screen, .receipt-section {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.55);
+  background: rgba(0,0,0,0.65);
   z-index: 800;
   align-items: center;
   justify-content: center;
   padding: 20px;
+  backdrop-filter: blur(6px);
 }
-.success-box {
-  border-radius: 16px;
-  padding: 36px 28px;
-  max-width: 380px;
-  width: 100%;
-  text-align: center;
-  box-shadow: 0 24px 64px rgba(0,0,0,.25);
-}
-.checkmark {
-  width: 64px; height: 64px;
-  border-radius: 50%;
-  background: #22c55e;
-  display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 18px;
-  font-size: 1.8rem; color: #fff;
-}
-.checkmark::after { content: "✓"; }
-.success-box h3 { font-family: 'Quintessential', cursive; font-size: 1.5rem; margin-bottom: 8px; }
-.success-box p  { font-family: 'Quicksand', sans-serif; font-size: .9rem; opacity: .65; }
-.success-box button {
-  margin-top: 20px;
-  font-family: 'Quicksand', sans-serif;
-  font-weight: 700;
-  border-radius: 50px;
-  padding: 11px 28px;
-  border: none;
-  cursor: pointer;
-  transition: opacity .2s;
-}
-.success-box button:hover { opacity: .85; }
 
-/* ── Receipt section ── */
-.receipt-section {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.55);
-  z-index: 900;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-.receipt-box {
-  border-radius: 16px;
-  padding: 28px 24px;
-  max-width: 560px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 24px 64px rgba(0,0,0,.25);
-}
-.receipt-box h3 {
-  font-family: 'Quintessential', cursive;
-  font-size: 1.3rem;
-  margin-bottom: 18px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgba(128,128,128,.15);
-}
-#closeReceipt {
-  margin-top: 16px;
-  font-family: 'Quicksand', sans-serif;
-  font-weight: 700;
-  border-radius: 50px;
-  padding: 9px 22px;
-  border: 1px solid rgba(128,128,128,.25);
-  background: transparent;
-  cursor: pointer;
-  width: 100%;
-  transition: background .18s;
-}
-#closeReceipt:hover { background: rgba(128,128,128,.08); }
-
-/* ── Reset modal ── */
+/* Reset Modal */
 .modal {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.5);
+  background: rgba(0,0,0,0.6);
   z-index: 1000;
   align-items: center;
   justify-content: center;
-  padding: 20px;
 }
-.modal[style*="flex"] { display: flex; }
-.modal-box {
-  border-radius: 14px;
-  padding: 26px 24px 22px;
-  max-width: 360px;
-  width: 100%;
-  box-shadow: 0 16px 48px rgba(0,0,0,.25);
-}
-.modal-box p { font-family: 'Quicksand', sans-serif; font-size: .9rem; margin-bottom: 18px; line-height: 1.6; }
-.modal-buttons { display: flex; gap: 10px; }
-.modal-buttons button {
-  flex: 1; padding: 9px; border-radius: 8px; border: none;
-  font-family: 'Quicksand', sans-serif; font-weight: 700;
-  font-size: .85rem; cursor: pointer; transition: opacity .15s;
-}
-.modal-buttons button:hover { opacity: .82; }
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .progress-step p { display: none; }
-  .progress-step span { width: 28px; height: 28px; font-size: .72rem; }
-  .booking-title { font-size: 1.3rem; }
-  .form-navigation { gap: 8px; }
-  .form-navigation .btn { padding: 9px 16px; font-size: .82rem; }
-  .receipt-box, .success-box { padding: 22px 16px; }
+  .progress-step span { width: 36px; height: 36px; font-size: 0.85rem; }
+  #bookingForm { padding: 26px 20px; }
+  .booking-title { font-size: 1.5rem; }
+  .form-navigation { flex-direction: column; }
+  .form-navigation #nextStep { width: 100%; margin-left: 0; }
 }
 
 @media (max-width: 480px) {
-  .booking-progress { padding: 24px 0 40px; }
-  .progress-wrapper { padding: 0; }
-  .form-navigation #nextStep { margin-left: 0; width: 100%; }
-  .form-navigation { flex-direction: column-reverse; }
-  .form-navigation .btn { width: 100%; text-align: center; }
-  #mpesaPayBtn { font-size: .85rem; padding: 11px 16px; }
+  .booking-progress { padding: 25px 0 50px; }
+  #bookingForm { padding: 22px 16px; }
+}
+/* ── Inline Error Messages ── */
+.input-error {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
+}
+
+.error-message {
+    color: #ef4444;
+    font-size: 0.82rem;
+    margin-top: 6px;
+    font-family: 'Quicksand', sans-serif;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
 }

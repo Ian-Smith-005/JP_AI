@@ -66,9 +66,9 @@
 </section>
 
 <!-- CART FAB -->
-<button class="cart-fab btn primary-btn" id="cartFab" onclick="openCart()" title="View Cart">
+<button class="cart-fab" id="cartFab" onclick="openCart()" title="View Cart">
   <i class="fa-solid fa-cart-shopping"></i>
-  <span class="cart-badge btn primary-btn" id="cartBadge" style="display:none">0</span>
+  <span class="cart-badge" id="cartBadge" style="display: none;">0</span>
 </button>
 
 <!-- CART OVERLAY -->
@@ -95,39 +95,61 @@
 <!-- CHECKOUT MODAL -->
 <div class="checkout-modal" id="checkoutModal">
   <div class="checkout-box">
+
     <div id="checkoutForm">
-      <h4>Checkout</h4>
-      <div id="checkoutSummary" class="mb-3" style="font-family:Quicksand,sans-serif;font-size:.85rem;opacity:.7;padding:10px 14px;border-radius:8px;border:1px solid rgba(128,128,128,.15)"></div>
-      <div class="mb-3">
-        <label class="form-label" style="font-family:Quicksand,sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.6">Full Name</label>
-        <input type="text" id="co-name" class="form-control" placeholder="Your full name">
-      </div>
-      <div class="mb-3">
-        <label class="form-label" style="font-family:Quicksand,sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.6">Email</label>
-        <input type="email" id="co-email" class="form-control" placeholder="email@…">
-      </div>
-      <div class="mb-3">
-        <label class="form-label" style="font-family:Quicksand,sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.6">Phone / M-Pesa</label>
-        <input type="tel" id="co-phone" class="form-control" placeholder="+254…">
-      </div>
-      <div class="mb-4">
-        <label class="form-label" style="font-family:Quicksand,sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.6">Delivery Address</label>
-        <textarea id="co-address" class="form-control" rows="2" placeholder="Pickup from studio or delivery address…"></textarea>
-      </div>
-      <div id="checkoutError" style="display:none;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:#dc2626;border-radius:8px;padding:10px 14px;font-size:.85rem;margin-bottom:14px;font-family:Quicksand,sans-serif"></div>
-      <div class="d-flex gap-2">
-        <button class="btn primary-btn flex-1 w-100" id="placeOrderBtn" onclick="placeOrder()">
-          <i class="fa-solid fa-check me-2"></i>Place Order — Pay via M-Pesa
+      <div class="checkout-header">
+        <h4>Complete Your Order</h4>
+        <button class="checkout-close" onclick="closeCheckout()">
+          <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
-      <button class="btn outline-btn w-100 mt-2" onclick="closeCheckout()">Cancel</button>
+
+      <div id="checkoutSummary" class="checkout-summary"></div>
+
+      <!-- 2-Column Grid Form -->
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Full Name <span class="required">*</span></label>
+          <input type="text" id="co-name" placeholder="John Doe" required>
+        </div>
+
+        <div class="form-group">
+          <label>Email Address <span class="required">*</span></label>
+          <input type="email" id="co-email" placeholder="you@example.com" required>
+        </div>
+
+        <div class="form-group full-width">
+          <label>Phone Number (M-Pesa) <span class="required">*</span></label>
+          <input type="tel" id="co-phone" placeholder="+254 7XX XXX XXX" required>
+        </div>
+
+        <div class="form-group full-width">
+          <label>Delivery / Pickup Details</label>
+          <textarea id="co-address" rows="3" placeholder="Full address or 'Pickup from Shanzu Studio, Mombasa'"></textarea>
+        </div>
+      </div>
+
+      <div id="checkoutError" class="checkout-error"></div>
+
+      <button id="placeOrderBtn" class="pay-btn" onclick="placeOrder()">
+        <i class="fa-solid fa-lock me-2"></i> Pay with M-Pesa
+      </button>
+
+      <button class="cancel-btn" onclick="closeCheckout()">Cancel</button>
+
+      <p class="secure-text">
+        <i class="fa-solid fa-shield-halved"></i> Secure checkout • Powered by Joyalty Photography
+      </p>
     </div>
-    <div class="checkout-success" id="checkoutSuccess">
+
+    <!-- Success Screen -->
+    <div id="checkoutSuccess" class="checkout-success">
       <i class="fa-solid fa-circle-check"></i>
-      <h5>Order Placed!</h5>
-      <p>We'll contact you shortly to confirm payment and delivery details.</p>
-      <button class="btn primary-btn mt-3" onclick="closeCheckout(); clearCart();">Continue Shopping</button>
+      <h5>Order Placed Successfully!</h5>
+      <p>Thank you! We will send an STK Push to your phone shortly.</p>
+      <button class="pay-btn" onclick="closeCheckout(); clearCart();">Continue Shopping</button>
     </div>
+
   </div>
 </div>
 

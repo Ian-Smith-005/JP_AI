@@ -13,7 +13,7 @@
       - Receipt rendered + auto-downloaded as HTML file
       - localStorage draft cleared
 ============================================================ */
-/*
+
 // ── Pricing mirrors DB and services.html ─────────────────────
 const SERVICE_PRICES = {
   "Wedding Photography":    45000,
@@ -160,19 +160,79 @@ function renderPaymentSummary() {
     </p>`;
 }
 
-// ── Validation ────────────────────────────────────────────────
+// ── Validation Helpers ───────────────────────────────────────
+function showError(inputId, message) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+
+    // Remove existing error
+    clearError(inputId);
+
+    const errorDiv = document.createElement("div");
+    errorDiv.className = "error-message";
+    errorDiv.style.color = "#ef4444";
+    errorDiv.style.fontSize = "0.82rem";
+    errorDiv.style.marginTop = "6px";
+    errorDiv.style.fontFamily = "'Quicksand', sans-serif";
+    errorDiv.textContent = message;
+
+    input.parentElement.appendChild(errorDiv);
+    input.classList.add("input-error");
+}
+
+function clearError(inputId) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+
+    const parent = input.parentElement;
+    const existingError = parent.querySelector(".error-message");
+    if (existingError) existingError.remove();
+
+    input.classList.remove("input-error");
+}
+
+function clearAllErrors() {
+    document.querySelectorAll(".error-message").forEach(el => el.remove());
+    document.querySelectorAll(".input-error").forEach(el => el.classList.remove("input-error"));
+}
+
+// ── Main Validation Function ─────────────────────────────────
 function validateStep(step) {
-  if (step === 0) {
-    const name  = document.getElementById("clientName").value.trim();
-    const email = document.getElementById("clientEmail").value.trim();
-    const phone = document.getElementById("clientPhone").value.trim();
-    if (!name || !email || !phone) { alert("Please fill in your name, email and phone number."); return false; }
-    if (!/\S+@\S+\.\S+/.test(email)) { alert("Please enter a valid email address."); return false; }
-  }
-  if (step === 1) {
-    if (!document.getElementById("serviceType").value) { alert("Please select a service."); return false; }
-  }
-  return true;
+    clearAllErrors();   // Clear previous errors
+
+    let isValid = true;
+
+    if (step === 0) {
+        const name  = document.getElementById("clientName").value.trim();
+        const email = document.getElementById("clientEmail").value.trim();
+        const phone = document.getElementById("clientPhone").value.trim();
+
+        if (!name) {
+            showError("clientName", "Full name is required");
+            isValid = false;
+        }
+        if (!email) {
+            showError("clientEmail", "Email address is required");
+            isValid = false;
+        } else if (!/\S+@\S+\.\S+/.test(email)) {
+            showError("clientEmail", "Please enter a valid email address");
+            isValid = false;
+        }
+        if (!phone) {
+            showError("clientPhone", "Phone number is required");
+            isValid = false;
+        }
+    }
+
+    if (step === 1) {
+        const service = document.getElementById("serviceType").value;
+        if (!service) {
+            showError("serviceType", "Please select a service");
+            isValid = false;
+        }
+    }
+
+    return isValid;
 }
 
 // ── Collect step data ─────────────────────────────────────────
@@ -609,7 +669,7 @@ if (data.success) {
     });
   }, 10000);
 }
-*/
+
 
 /* ============================================================
    JOYALTY — services-booking.js
@@ -622,7 +682,7 @@ if (data.success) {
    • Shows success screen + receipt card
    • Reset / close handling
 ============================================================ */
-
+/*
 // ── DOM refs ───────────────────────────────────────────────────
 const bookingSection = document.getElementById("booking-form-section");
 const formSteps      = document.querySelectorAll(".form-step");
@@ -1106,3 +1166,4 @@ document.addEventListener("DOMContentLoaded", () => {
   prevBtn.style.display     = "none";
   mpesaPayBtn.style.display = "none";
 });
+*/
