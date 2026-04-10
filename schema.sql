@@ -1,7 +1,8 @@
 -- ============================================================
--- JOYALTY PHOTOGRAPHY — Neon PostgreSQL Schema (FIXED)
--- Run this in your Neon SQL Editor
--- KEY FIX: Added UNIQUE constraint on clients.email
+-- JOYALTY PHOTOGRAPHY — Neon PostgreSQL Schema (FINAL)
+-- Includes:
+-- ✅ Admin can delete bookings safely
+-- ✅ Auto-expiry for pending bookings (1 hour)
 -- ============================================================
 
 -- ── 1. SERVICES ──────────────────────────────────────────────
@@ -50,11 +51,10 @@ INSERT INTO extra_services (name, price) VALUES
 ON CONFLICT (name) DO NOTHING;
 
 -- ── 4. CLIENTS ───────────────────────────────────────────────
--- FIX: email must have UNIQUE constraint for ON CONFLICT (email) to work
 CREATE TABLE IF NOT EXISTS clients (
   id         SERIAL PRIMARY KEY,
   name       TEXT NOT NULL,
-  email      TEXT NOT NULL UNIQUE,  -- ← THIS was missing, caused your error
+  email      TEXT NOT NULL UNIQUE,
   phone      TEXT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -63,10 +63,10 @@ CREATE TABLE IF NOT EXISTS clients (
 CREATE TABLE IF NOT EXISTS bookings (
   id                SERIAL PRIMARY KEY,
   booking_ref       TEXT NOT NULL UNIQUE,
-  client_id         INTEGER REFERENCES clients(id),
-  service_id        INTEGER REFERENCES services(id),
-  package_id        INTEGER REFERENCES packages(id),
-  extra_service_id  INTEGER REFERENCES extra_services(id),
+  client_id         INTEGER,
+  service_id        INTEGER,
+  package_id        INTEGER,
+  extra_service_id  INTEGER,
   event_date        DATE,
   event_time        TIME,
   event_location    TEXT,
@@ -79,14 +79,21 @@ CREATE TABLE IF NOT EXISTS bookings (
   deposit_amount    INTEGER,
   status            TEXT DEFAULT 'pending',
   payment_method    TEXT,
+  expires_at        TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '1 hour'), -- ✅ NEW
   created_at        TIMESTAMPTZ DEFAULT NOW(),
-  updated_at        TIMESTAMPTZ DEFAULT NOW()
+  updated_at        TIMESTAMPTZ DEFAULT NOW(),
+
+  -- ✅ UPDATED FK RULES (allow delete safely)
+  FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE SET NULL,
+  FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE SET NULL,
+  FOREIGN KEY (package_id) REFERENCES packages(id) ON DELETE SET NULL,
+  FOREIGN KEY (extra_service_id) REFERENCES extra_services(id) ON DELETE SET NULL
 );
 
 -- ── 6. PAYMENTS ──────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS payments (
   id                  SERIAL PRIMARY KEY,
-  booking_id          INTEGER REFERENCES bookings(id),
+  booking_id          INTEGER,
   payment_method      TEXT NOT NULL,
   amount              INTEGER NOT NULL,
   status              TEXT DEFAULT 'pending',
@@ -96,13 +103,16 @@ CREATE TABLE IF NOT EXISTS payments (
   stripe_payment_id   TEXT,
   stripe_session_id   TEXT,
   initiated_at        TIMESTAMPTZ DEFAULT NOW(),
-  completed_at        TIMESTAMPTZ
+  completed_at        TIMESTAMPTZ,
+
+  -- ✅ CASCADE delete when booking is removed
+  FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE
 );
 
 -- ── 7. RECEIPTS ──────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS receipts (
   id           SERIAL PRIMARY KEY,
-  booking_id   INTEGER REFERENCES bookings(id) UNIQUE,
+  booking_id   INTEGER UNIQUE,
   receipt_ref  TEXT NOT NULL UNIQUE,
   client_name  TEXT,
   client_email TEXT,
@@ -119,7 +129,10 @@ CREATE TABLE IF NOT EXISTS receipts (
   deposit_paid INTEGER DEFAULT 0,
   balance_due  INTEGER,
   payment_ref  TEXT,
-  issued_at    TIMESTAMPTZ DEFAULT NOW()
+  issued_at    TIMESTAMPTZ DEFAULT NOW(),
+
+  -- ✅ CASCADE delete when booking is removed
+  FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE
 );
 
 -- ── 8. Auto-update updated_at on bookings ────────────────────
@@ -136,7 +149,17 @@ CREATE TRIGGER bookings_updated_at
   BEFORE UPDATE ON bookings
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
--- ── 9. Indexes ───────────────────────────────────────────────
+-- ── 9. CLEANUP FUNCTION (delete expired pending bookings) ────
+CREATE OR REPLACE FUNCTION cleanup_pending_bookings()
+RETURNS void AS $$
+BEGIN
+  DELETE FROM bookings
+  WHERE status IN ('pending', 'pending_payment')
+  AND expires_at < NOW();
+END;
+$$ LANGUAGE plpgsql;
+
+-- ── 10. Indexes ──────────────────────────────────────────────
 CREATE INDEX IF NOT EXISTS idx_bookings_status     ON bookings(status);
 CREATE INDEX IF NOT EXISTS idx_bookings_event_date ON bookings(event_date);
 CREATE INDEX IF NOT EXISTS idx_payments_booking_id ON payments(booking_id);
