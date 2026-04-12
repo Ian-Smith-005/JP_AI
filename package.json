@@ -1,17 +1,8 @@
 {
   "name": "jp_ai",
   "version": "1.0.0",
-  "description": "Joyalty Photography main site",
-  "main": "index.js",
   "type": "module",
-  "scripts": {
-    "build": "echo 'No build step'"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Ian-Smith-005/JP_AI.git"
-  },
-  "license": "ISC",
+  "scripts": { "build": "echo 'No build step'" },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0",
     "resend": "^4.0.0"
