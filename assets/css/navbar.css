@@ -82,7 +82,7 @@ body[data-theme="dark"] .custom-nav {
 }
 
 /* ================================
-   HAMBURGER
+   HAMBURGER+
 ================================ */
 .navbar-toggler.hamburger {
     display: none; /* hidden on desktop */
