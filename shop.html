@@ -1,11 +1,13 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shop | Joyalty Photography</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&family=Quintessential&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&family=Quintessential&display=swap"
+    rel="stylesheet" />
   <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet" />
   <script src="https://kit.fontawesome.com/f3068f95b3.js" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="assets/css/landingpage.css" />
@@ -15,13 +17,15 @@
   <link rel="stylesheet" href="assets/css/footer.css" />
   <link rel="stylesheet" href="assets/css/shop.css" />
   <link rel="stylesheet" href="assets/css/rwd-fix.css" />
-  <link rel="shortcut icon" href="https://joyaltyphotography.netlify.app/images/templatemo-logo.png" type="image/x-icon">
+  <link rel="shortcut icon" href="https://joyaltyphotography.netlify.app/images/templatemo-logo.png"
+    type="image/x-icon">
 
 
 </head>
+
 <body data-theme="light">
 
-<!-- NAVBAR -->
+  <!-- NAVBAR -->
 
   <nav class="navbar navbar-expand-lg fixed-top custom-nav">
     <div class="container navbar-inner">
@@ -64,210 +68,224 @@
     </div>
 
   </nav>
-<!-- HERO -->
-<div class="shop-hero container" data-aos="fade-up">
-  <h2 class="section-title">Joyalty Store</h2>
-  <p>Premium prints, frames, albums and photography add-ons. Order online — delivered or picked up at our Mombasa studio.</p>
-</div>
-
-<!-- FILTER BAR -->
-<div class="container">
-  <div class="filter-bar" id="filterBar">
-    <button class="filter-pill active" data-filter="all">All Products</button>
-    <button class="filter-pill" data-filter="frames">Frames</button>
-    <button class="filter-pill" data-filter="prints">Prints</button>
-    <button class="filter-pill" data-filter="albums">Albums</button>
-    <button class="filter-pill" data-filter="accessories">Accessories</button>
+  <!-- HERO -->
+  <div class="shop-hero container" data-aos="fade-up">
+    <h2 class="section-title">Joyalty Store</h2>
+    <p>Premium prints, frames, albums and photography add-ons. Order online — delivered or picked up at our Mombasa
+      studio.</p>
   </div>
-</div>
 
-<!-- PRODUCTS GRID -->
-<section class="container pb-5">
-  <div class="row g-4" id="productsGrid"></div>
-</section>
-
-<!-- CART FAB -->
-<button class="cart-fab" id="cartFab" onclick="openCart()" title="View Cart">
-  <i class="fa-solid fa-cart-shopping"></i>
-  <span class="cart-badge" id="cartBadge" style="display: none;">0</span>
-</button>
-
-<!-- CART OVERLAY -->
-<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
-
-<!-- CART SIDEBAR -->
-<div class="cart-sidebar" id="cartSidebar">
-  <div class="cart-header">
-    <h5><i class="fa-solid fa-cart-shopping me-2"></i>Your Cart</h5>
-    <button class="cart-close" onclick="closeCart()"><i class="fa-solid fa-xmark"></i></button>
-  </div>
-  <div class="cart-items" id="cartItems"></div>
-  <div class="cart-footer">
-    <div class="cart-total">
-      <span>Total</span>
-      <span id="cartTotal">KSh 0</span>
+  <!-- FILTER BAR -->
+  <div class="container">
+    <div class="filter-bar" id="filterBar">
+      <button class="filter-pill active" data-filter="all">All Products</button>
+      <button class="filter-pill" data-filter="frames">Frames</button>
+      <button class="filter-pill" data-filter="prints">Prints</button>
+      <button class="filter-pill" data-filter="albums">Albums</button>
+      <button class="filter-pill" data-filter="accessories">Accessories</button>
     </div>
-    <button class="btn primary-btn w-100" onclick="openCheckout()">
-      <i class="fa-solid fa-lock me-2"></i>Proceed to Checkout
-    </button>
   </div>
-</div>
 
-<!-- CHECKOUT MODAL -->
-<div class="checkout-modal" id="checkoutModal">
-  <div class="checkout-box">
+  <!-- PRODUCTS GRID -->
+  <section class="container pb-5">
+    <div class="row g-4" id="productsGrid"></div>
+  </section>
 
-    <div id="checkoutForm">
-      <div class="checkout-header">
-        <h4>Complete Your Order</h4>
-        <button class="checkout-close" onclick="closeCheckout()">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
+  <!-- CART FAB -->
+  <button class="cart-fab" id="cartFab" onclick="openCart()" title="View Cart">
+    <i class="fa-solid fa-cart-shopping"></i>
+    <span class="cart-badge" id="cartBadge" style="display: none;">0</span>
+  </button>
+
+  <!-- CART OVERLAY -->
+  <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+
+  <!-- CART SIDEBAR -->
+  <div class="cart-sidebar" id="cartSidebar">
+    <div class="cart-header">
+      <h5><i class="fa-solid fa-cart-shopping me-2"></i>Your Cart</h5>
+      <button class="cart-close" onclick="closeCart()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-footer">
+      <div class="cart-total">
+        <span>Total</span>
+        <span id="cartTotal">KSh 0</span>
       </div>
-
-      <div id="checkoutSummary" class="checkout-summary"></div>
-
-      <!-- 2-Column Grid Form -->
-      <div class="form-grid">
-        <div class="form-group">
-          <label>Full Name <span class="required">*</span></label>
-          <input type="text" id="co-name" placeholder="John Doe" required>
-        </div>
-
-        <div class="form-group">
-          <label>Email Address <span class="required">*</span></label>
-          <input type="email" id="co-email" placeholder="you@example.com" required>
-        </div>
-
-        <div class="form-group full-width">
-          <label>Phone Number (M-Pesa) <span class="required">*</span></label>
-          <input type="tel" id="co-phone" placeholder="+254 7XX XXX XXX" required>
-        </div>
-
-        <div class="form-group full-width">
-          <label>Delivery / Pickup Details</label>
-          <textarea id="co-address" rows="3" placeholder="Full address or 'Pickup from Shanzu Studio, Mombasa'"></textarea>
-        </div>
-      </div>
-
-      <div id="checkoutError" class="checkout-error"></div>
-
-      <button id="placeOrderBtn" class="pay-btn" onclick="placeOrder()">
-        <i class="fa-solid fa-lock me-2"></i> Pay with M-Pesa
+      <button class="btn primary-btn w-100" onclick="openCheckout()">
+        <i class="fa-solid fa-lock me-2"></i>Proceed to Checkout
       </button>
-
-      <button class="cancel-btn" onclick="closeCheckout()">Cancel</button>
-
-      <p class="secure-text">
-        <i class="fa-solid fa-shield-halved"></i> Secure checkout • Powered by Joyalty Photography
-      </p>
-    </div>
-
-    <!-- Success Screen -->
-    <div id="checkoutSuccess" class="checkout-success">
-      <i class="fa-solid fa-circle-check"></i>
-      <h5>Order Placed Successfully!</h5>
-      <p>Thank you! We will send an STK Push to your phone shortly.</p>
-      <button class="pay-btn" onclick="closeCheckout(); clearCart();">Continue Shopping</button>
-    </div>
-
-  </div>
-</div>
-
-<!-- AI CHAT (same as all pages) -->
-<button class="chat-toggle" id="chatToggle"><i class="fa-solid fa-comments"></i></button>
-<div class="chat-container" id="chatContainer">
-  <div class="chat-header">
-    <div class="chat-header-title"><i class="fa-solid fa-camera-retro"></i><span>Studio Chat</span></div>
-    <div class="chat-mode-pill" id="chatModePill">
-      <button id="btnModeAI" onclick="setChatMode('ai')" class="active">🤖 Joy</button>
-      <button id="btnModeLive" onclick="setChatMode('live')">💬 Live</button>
-    </div>
-    <div class="chat-header-actions">
-      <button class="chat-icon-btn danger" id="deleteChatBtn" onclick="openDeleteModal()" title="Clear"><i class="fa-solid fa-trash-can"></i></button>
-      <button class="chat-icon-btn" id="closeChat" title="Close"><i class="fa-solid fa-xmark"></i></button>
     </div>
   </div>
-  <div class="chat-name-prompt" id="chatNamePrompt">
-    <p>Welcome to live support 👋<br>What name should the admin see?</p>
-    <input type="text" id="liveNameInput" placeholder="Your name…" onkeypress="if(event.key==='Enter') confirmLiveName()">
-    <button onclick="confirmLiveName()">Start Live Chat</button>
-  </div>
-  <div class="chat-messages" id="chatMessages"></div>
-  <div class="chat-input">
-    <input id="chatInput" placeholder="Type a message…">
-    <button id="sendBtn"><i class="fa-solid fa-paper-plane"></i></button>
-  </div>
-</div>
-<div id="deleteModal" class="modal">
-  <div class="modal-box">
-    <p>Clear your chat history?</p>
-    <div class="modal-buttons">
-      <button id="confirmDelete">Yes, Clear</button>
-      <button id="cancelDelete">Cancel</button>
-    </div>
-  </div>
-</div>
 
-<!-- FOOTER -->
-<footer class="footer" id="contact">
-  <div class="footer-wave"><svg viewBox="0 0 1440 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" fill="currentColor" opacity=".06"/></svg></div>
-  <div class="footer-body" id="footerBody">
-    <div class="container">
-      <div class="row g-5">
-        <div class="col-lg-4 col-md-6">
-          <a class="footer-brand" href="index.html">
-            <img src="https://joyaltyphotography.netlify.app/images/templatemo-logo.png" alt="Logo">
-            <span class="footer-brand-name">JO<span>Y</span>ALTY</span>
-          </a>
-          <p class="footer-tagline">Capturing timeless moments. Based in Shanzu, Mombasa, Kenya.</p>
-          <div class="footer-social">
-            <a href="#" class="si-instagram"><i class="fa-brands fa-instagram"></i></a>
-            <a href="#" class="si-facebook"><i class="fa-brands fa-facebook-f"></i></a>
-            <a href="https://wa.me/254XXXXXXXXX" class="si-whatsapp" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
-            <a href="#" class="si-tiktok"><i class="fa-brands fa-tiktok"></i></a>
+  <!-- CHECKOUT MODAL -->
+  <div class="checkout-modal" id="checkoutModal">
+    <div class="checkout-box">
+
+      <div id="checkoutForm">
+        <div class="checkout-header">
+          <h4>Complete Your Order</h4>
+          <button class="checkout-close" onclick="closeCheckout()">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div id="checkoutSummary" class="checkout-summary"></div>
+
+        <!-- 2-Column Grid Form -->
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Full Name <span class="required">*</span></label>
+            <input type="text" id="co-name" placeholder="John Doe" required>
+          </div>
+
+          <div class="form-group">
+            <label>Email Address <span class="required">*</span></label>
+            <input type="email" id="co-email" placeholder="you@example.com" required>
+          </div>
+
+          <div class="form-group full-width">
+            <label>Phone Number (M-Pesa) <span class="required">*</span></label>
+            <input type="tel" id="co-phone" placeholder="+254 7XX XXX XXX" required>
+          </div>
+
+          <div class="form-group full-width">
+            <label>Delivery / Pickup Details</label>
+            <textarea id="co-address" rows="3"
+              placeholder="Full address or 'Pickup from Shanzu Studio, Mombasa'"></textarea>
           </div>
         </div>
-        <div class="col-lg-2 col-md-3 col-6">
-          <div class="footer-col-title">Navigate</div>
-          <ul class="footer-links">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="services.html">Services</a></li>
-            <li><a href="shop.html">Shop</a></li>
-            <li><a href="contact.html">Contact</a></li>
-          </ul>
-        </div>
-        <div class="col-lg-2 col-md-3 col-6">
-          <div class="footer-col-title">Shop</div>
-          <ul class="footer-links">
-            <li><a href="shop.html">Frames</a></li>
-            <li><a href="shop.html">Prints</a></li>
-            <li><a href="shop.html">Albums</a></li>
-            <li><a href="shop.html">Accessories</a></li>
-          </ul>
-        </div>
-        <div class="col-lg-4 col-md-6">
-          <div class="footer-col-title">Contact Us</div>
-          <div class="footer-contact-item"><i class="fa-solid fa-envelope"></i><a href="mailto:joyaltyphotography254@gmail.com">joyaltyphotography254@gmail.com</a></div>
-          <div class="footer-contact-item"><i class="fa-solid fa-phone"></i><span>+254 XXX XXX</span></div>
-          <div class="footer-contact-item"><i class="fa-solid fa-location-dot"></i><span>Shanzu, Mombasa, Kenya</span></div>
-        </div>
+
+        <div id="checkoutError" class="checkout-error"></div>
+
+        <button id="placeOrderBtn" class="pay-btn" onclick="placeOrder()">
+          <i class="fa-solid fa-lock me-2"></i> Pay with M-Pesa
+        </button>
+
+        <button class="cancel-btn" onclick="closeCheckout()">Cancel</button>
+
+        <p class="secure-text">
+          <i class="fa-solid fa-shield-halved"></i> Secure checkout • Powered by Joyalty Photography
+        </p>
+      </div>
+
+      <!-- Success Screen -->
+      <div id="checkoutSuccess" class="checkout-success">
+        <i class="fa-solid fa-circle-check"></i>
+        <h5>Order Placed Successfully!</h5>
+        <p>Thank you! We will send an STK Push to your phone shortly.</p>
+        <button class="pay-btn" onclick="closeCheckout(); clearCart();">Continue Shopping</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- AI CHAT (same as all pages) -->
+  <button class="chat-toggle" id="chatToggle"><i class="fa-solid fa-comments"></i></button>
+  <div class="chat-container" id="chatContainer">
+    <div class="chat-header">
+      <div class="chat-header-title"><i class="fa-solid fa-camera-retro"></i><span>Studio Chat</span></div>
+      <div class="chat-mode-pill" id="chatModePill">
+        <button id="btnModeAI" onclick="setChatMode('ai')" class="active">🤖 Joy</button>
+        <button id="btnModeLive" onclick="setChatMode('live')">💬 Live</button>
+      </div>
+      <div class="chat-header-actions">
+        <button class="chat-icon-btn danger" id="deleteChatBtn" onclick="openDeleteModal()" title="Clear"><i
+            class="fa-solid fa-trash-can"></i></button>
+        <button class="chat-icon-btn" id="closeChat" title="Close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+    </div>
+    <div class="chat-name-prompt" id="chatNamePrompt">
+      <p>Welcome to live support 👋<br>What name should the admin see?</p>
+      <input type="text" id="liveNameInput" placeholder="Your name…"
+        onkeypress="if(event.key==='Enter') confirmLiveName()">
+      <button onclick="confirmLiveName()">Start Live Chat</button>
+    </div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input">
+      <input id="chatInput" placeholder="Type a message…">
+      <button id="sendBtn"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>
+  </div>
+  <div id="deleteModal" class="modal">
+    <div class="modal-box">
+      <p>Clear your chat history?</p>
+      <div class="modal-buttons">
+        <button id="confirmDelete">Yes, Clear</button>
+        <button id="cancelDelete">Cancel</button>
       </div>
     </div>
   </div>
-  <div class="footer-bottom">
-    <div class="container"><div class="row"><div class="col-12 text-center"><span>© 2026 Joyalty Photography. All rights reserved.</span></div></div></div>
-  </div>
-</footer>
 
-<!-- SCRIPTS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
-<script src="assets/js/aichat.js"></script>
-<script src="assets/js/toggletheme.js"></script>
-<script src="assets/js/landingpage.js"></script>
-<script src="assets/js/shop.js"></script>
+  <!-- FOOTER -->
+  <footer class="footer" id="contact">
+    <div class="footer-wave"><svg viewBox="0 0 1440 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+        <path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" fill="currentColor" opacity=".06" />
+      </svg></div>
+    <div class="footer-body" id="footerBody">
+      <div class="container">
+        <div class="row g-5">
+          <div class="col-lg-4 col-md-6">
+            <a class="footer-brand" href="index.html">
+              <img src="https://joyaltyphotography.netlify.app/images/templatemo-logo.png" alt="Logo">
+              <span class="footer-brand-name">JO<span>Y</span>ALTY</span>
+            </a>
+            <p class="footer-tagline">Capturing timeless moments. Based in Shanzu, Mombasa, Kenya.</p>
+            <div class="footer-social">
+              <a href="#" class="si-instagram"><i class="fa-brands fa-instagram"></i></a>
+              <a href="#" class="si-facebook"><i class="fa-brands fa-facebook-f"></i></a>
+              <a href="https://wa.me/254XXXXXXXXX" class="si-whatsapp" target="_blank"><i
+                  class="fa-brands fa-whatsapp"></i></a>
+              <a href="#" class="si-tiktok"><i class="fa-brands fa-tiktok"></i></a>
+            </div>
+          </div>
+          <div class="col-lg-2 col-md-3 col-6">
+            <div class="footer-col-title">Navigate</div>
+            <ul class="footer-links">
+              <li><a href="index.html">Home</a></li>
+              <li><a href="services.html">Services</a></li>
+              <li><a href="shop.html">Shop</a></li>
+              <li><a href="contact.html">Contact</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-2 col-md-3 col-6">
+            <div class="footer-col-title">Shop</div>
+            <ul class="footer-links">
+              <li><a href="shop.html">Frames</a></li>
+              <li><a href="shop.html">Prints</a></li>
+              <li><a href="shop.html">Albums</a></li>
+              <li><a href="shop.html">Accessories</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <div class="footer-col-title">Contact Us</div>
+            <div class="footer-contact-item"><i class="fa-solid fa-envelope"></i><a
+                href="mailto:joyaltyphotography254@gmail.com">joyaltyphotography254@gmail.com</a></div>
+            <div class="footer-contact-item"><i class="fa-solid fa-phone"></i><span>+254 XXX XXX</span></div>
+            <div class="footer-contact-item"><i class="fa-solid fa-location-dot"></i><span>Shanzu, Mombasa, Kenya</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <div class="row">
+          <div class="col-12 text-center"><span>© 2026 Joyalty Photography. All rights reserved.</span></div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script src="assets/js/aichat.js"></script>
+  <script src="assets/js/toggletheme.js"></script>
+  <script src="assets/js/landingpage.js"></script>
+  <script src="assets/js/shop.js"></script>
 
 
 </body>
+
 </html>

@@ -1,17 +1,16 @@
+.theme-btn {
+  border: none;
+  background: none;
+  font-size: 18px;
+  color: inherit;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-    .theme-btn{
-        border:none;
-        background:none;
-        font-size:18px;
-        color:inherit;
-        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
+.theme-btn i {
+  font-size: 1.6rem;
+  transition: transform 0.4s ease;
+}
 
-    .theme-btn i{
-        font-size:1.6rem;
-        transition: transform 0.4s ease;
-    }
-
-    .theme-btn:active{
-        transform: rotate(180deg) scale(1.2);
-    }
+.theme-btn:active {
+  transform: rotate(180deg) scale(1.2);
+}

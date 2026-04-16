@@ -1,45 +1,38 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Joyalty Portfolio</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
+  <title>Joyalty Portfolio</title>
 
-    <link
-      href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&family=Quintessential&display=swap"
-      rel="stylesheet"
-    />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
 
-    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&family=Quintessential&display=swap"
+    rel="stylesheet" />
 
-    <script
-      src="https://kit.fontawesome.com/f3068f95b3.js"
-      crossorigin="anonymous"
-    ></script>
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet" />
 
-    <link rel="stylesheet" href="assets/css/landingpage.css" />
-    <link rel="stylesheet" href="assets/css/portfolio.css" />
-    <link rel="stylesheet" href="assets/css/aichat.css" />
-    <link rel="stylesheet" href="assets/css/toggletheme.css" />
-     <link rel="stylesheet" href="assets/css/navbar.css" />
-    <link rel="stylesheet" href="assets/css/preloader.css" />
-    <link rel="stylesheet" href="assets/css/footer.css" />
+  <script src="https://kit.fontawesome.com/f3068f95b3.js" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="assets/css/landingpage.css" />
+  <link rel="stylesheet" href="assets/css/portfolio.css" />
+  <link rel="stylesheet" href="assets/css/aichat.css" />
+  <link rel="stylesheet" href="assets/css/toggletheme.css" />
+  <link rel="stylesheet" href="assets/css/navbar.css" />
+  <link rel="stylesheet" href="assets/css/preloader.css" />
+  <link rel="stylesheet" href="assets/css/footer.css" />
   <link rel="stylesheet" href="assets/css/rwd-fix.css" />
-     <!--FAVICON-->
-    <link rel="shortcut icon" href="https://joyaltyphotography.netlify.app/images/templatemo-logo.png"
-        type="image/x-icon">
-  </head>
+  <!--FAVICON-->
+  <link rel="shortcut icon" href="https://joyaltyphotography.netlify.app/images/templatemo-logo.png"
+    type="image/x-icon">
+</head>
 
-  <body data-theme="light">
-   
-    <!--NAVBAR-->
-    <!-- NAVBAR -->
+<body data-theme="light">
+
+  <!--NAVBAR-->
+  <!-- NAVBAR -->
   <nav class="navbar navbar-expand-lg fixed-top custom-nav">
     <div class="container navbar-inner">
 
@@ -82,383 +75,342 @@
 
   </nav>
 
-    <!-- HERO -->
+  <!-- HERO -->
 
-    <section class="portfolio-hero">
-      <div class="container text-center">
-        <h1 data-aos="fade-up">Our Photography Portfolio</h1>
+  <section class="portfolio-hero">
+    <div class="container text-center">
+      <h1 data-aos="fade-up">Our Photography Portfolio</h1>
 
-        <p data-aos="fade-up">
-          Moments captured through cinematic storytelling
-        </p>
+      <p data-aos="fade-up">
+        Moments captured through cinematic storytelling
+      </p>
+    </div>
+  </section>
+
+  <!-- FILTER BUTTONS -->
+
+  <section class="portfolio-filter">
+    <div class="container text-center">
+      <div class="filter-buttons">
+        <button class="filter-btn active" data-filter="all">All</button>
+
+        <button class="filter-btn" data-filter="wedding">Wedding</button>
+
+        <button class="filter-btn" data-filter="portrait">Portrait</button>
+
+        <button class="filter-btn" data-filter="event">Events</button>
+
+        <button class="filter-btn" data-filter="commercial">
+          Commercial
+        </button>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- FILTER BUTTONS -->
+  <!-- GALLERY -->
 
-    <section class="portfolio-filter">
-      <div class="container text-center">
-        <div class="filter-buttons">
-          <button class="filter-btn active" data-filter="all">All</button>
+  <section class="portfolio-gallery">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-4 col-md-6 portfolio-item wedding" data-aos="zoom-in">
+          <img src="https://images.unsplash.com/photo-1519741497674-611481863552" />
+        </div>
 
-          <button class="filter-btn" data-filter="wedding">Wedding</button>
+        <div class="col-lg-4 col-md-6 portfolio-item portrait" data-aos="zoom-in">
+          <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e" />
+        </div>
 
-          <button class="filter-btn" data-filter="portrait">Portrait</button>
+        <div class="col-lg-4 col-md-6 portfolio-item event" data-aos="zoom-in">
+          <img src="https://images.unsplash.com/photo-1505373877841-8d25f7d46678" />
+        </div>
 
-          <button class="filter-btn" data-filter="event">Events</button>
+        <div class="col-lg-4 col-md-6 portfolio-item wedding" data-aos="zoom-in">
+          <img src="https://images.unsplash.com/photo-1504208434309-cb69f4fe52b0" />
+        </div>
 
-          <button class="filter-btn" data-filter="commercial">
-            Commercial
-          </button>
+        <div class="col-lg-4 col-md-6 portfolio-item portrait" data-aos="zoom-in">
+          <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330" />
+        </div>
+
+        <div class="col-lg-4 col-md-6 portfolio-item commercial" data-aos="zoom-in">
+          <img src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2" />
+        </div>
+
+        <div class="col-lg-4 col-md-6 portfolio-item event" data-aos="zoom-in">
+          <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30" />
+        </div>
+
+        <div class="col-lg-4 col-md-6 portfolio-item commercial" data-aos="zoom-in">
+          <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee" />
+        </div>
+
+        <div class="col-lg-4 col-md-6 portfolio-item wedding" data-aos="zoom-in">
+          <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc" />
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- GALLERY -->
+  <!-- CTA -->
 
-    <section class="portfolio-gallery">
+  <section class="portfolio-cta">
+    <div class="container text-center">
+      <h2 data-aos="fade-up">Ready to create your story?</h2>
+
+      <p data-aos="fade-up">Book your photography session today</p>
+
+      <a href="services.html" class="btn primary-btn">Book Session</a>
+    </div>
+  </section>
+
+
+  <!-- FAB toggle -->
+  <button class="chat-toggle" id="chatToggle" aria-label="Open chat">
+    <i class="fa-solid fa-comments"></i>
+  </button>
+
+  <!-- Chat container -->
+  <div class="chat-container" id="chatContainer" role="dialog" aria-label="Chat">
+
+    <!-- ── HEADER — single row, no stacking ── -->
+    <div class="chat-header">
+
+      <!-- Title -->
+      <div class="chat-header-title">
+        <i class="fa-solid fa-camera-retro"></i>
+        <span>Studio Chat</span>
+      </div>
+
+      <!-- Mode toggle pill — centered via margin:auto in CSS -->
+      <div class="chat-mode-pill" id="chatModePill">
+        <button id="btnModeAI" onclick="setChatMode('ai')" class="active">🤖 Joy</button>
+        <button id="btnModeLive" onclick="setChatMode('live')">💬 Live</button>
+      </div>
+
+      <!-- Action icons -->
+      <div class="chat-header-actions">
+        <button class="chat-icon-btn danger" id="deleteChatBtn" onclick="openDeleteModal()" title="Clear chat">
+          <i class="fa-solid fa-trash-can"></i>
+        </button>
+        <button class="chat-icon-btn" id="closeChat" title="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── NAME PROMPT (shown when switching to Live mode, no name yet) ── -->
+    <div class="chat-name-prompt" id="chatNamePrompt">
+      <p>Welcome to live support 👋<br>What name should the admin see for your chat?</p>
+      <input type="text" id="liveNameInput" placeholder="Your name or nickname…" maxlength="40"
+        onkeypress="if(event.key==='Enter') confirmLiveName()">
+      <button onclick="confirmLiveName()">Start Live Chat</button>
+    </div>
+
+    <!-- ── Messages ── -->
+    <div class="chat-messages" id="chatMessages"></div>
+
+    <!-- ── Input bar ── -->
+    <div class="chat-input">
+      <input id="chatInput" placeholder="Type a message…" autocomplete="off">
+      <button id="sendBtn" aria-label="Send">
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Delete modal -->
+  <div id="deleteModal" class="modal">
+    <div class="modal-box">
+      <p>Clear your chat history? This cannot be undone.</p>
+      <div class="modal-buttons">
+        <button id="confirmDelete">Yes, Clear</button>
+        <button id="cancelDelete">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- FOOTER -->
+  <footer class="footer" id="contact">
+
+    <!-- Wave top -->
+    <div class="footer-wave">
+      <svg viewBox="0 0 1440 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+        <path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" fill="currentColor" opacity=".06" />
+      </svg>
+    </div>
+
+    <!-- Main columns -->
+    <div class="footer-body" id="footerBody">
       <div class="container">
-        <div class="row g-4">
-          <div
-            class="col-lg-4 col-md-6 portfolio-item wedding"
-            data-aos="zoom-in"
-          >
-            <img
-              src="https://images.unsplash.com/photo-1519741497674-611481863552"
-            />
-          </div>
+        <div class="row g-5">
 
-          <div
-            class="col-lg-4 col-md-6 portfolio-item portrait"
-            data-aos="zoom-in"
-          >
-            <img
-              src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e"
-            />
-          </div>
-
-          <div
-            class="col-lg-4 col-md-6 portfolio-item event"
-            data-aos="zoom-in"
-          >
-            <img
-              src="https://images.unsplash.com/photo-1505373877841-8d25f7d46678"
-            />
-          </div>
-
-          <div
-            class="col-lg-4 col-md-6 portfolio-item wedding"
-            data-aos="zoom-in"
-          >
-            <img
-              src="https://images.unsplash.com/photo-1504208434309-cb69f4fe52b0"
-            />
-          </div>
-
-          <div
-            class="col-lg-4 col-md-6 portfolio-item portrait"
-            data-aos="zoom-in"
-          >
-            <img
-              src="https://images.unsplash.com/photo-1494790108377-be9c29b29330"
-            />
-          </div>
-
-          <div
-            class="col-lg-4 col-md-6 portfolio-item commercial"
-            data-aos="zoom-in"
-          >
-            <img
-              src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2"
-            />
-          </div>
-
-          <div
-            class="col-lg-4 col-md-6 portfolio-item event"
-            data-aos="zoom-in"
-          >
-            <img
-              src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30"
-            />
-          </div>
-
-          <div
-            class="col-lg-4 col-md-6 portfolio-item commercial"
-            data-aos="zoom-in"
-          >
-            <img
-              src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee"
-            />
-          </div>
-
-          <div
-            class="col-lg-4 col-md-6 portfolio-item wedding"
-            data-aos="zoom-in"
-          >
-            <img
-              src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc"
-            />
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- CTA -->
-
-    <section class="portfolio-cta">
-      <div class="container text-center">
-        <h2 data-aos="fade-up">Ready to create your story?</h2>
-
-        <p data-aos="fade-up">Book your photography session today</p>
-
-        <a href="services.html" class="btn primary-btn">Book Session</a>
-      </div>
-    </section>
-
-
-<!-- FAB toggle -->
-<button class="chat-toggle" id="chatToggle" aria-label="Open chat">
-  <i class="fa-solid fa-comments"></i>
-</button>
- 
-<!-- Chat container -->
-<div class="chat-container" id="chatContainer" role="dialog" aria-label="Chat">
- 
-  <!-- ── HEADER — single row, no stacking ── -->
-  <div class="chat-header">
- 
-    <!-- Title -->
-    <div class="chat-header-title">
-      <i class="fa-solid fa-camera-retro"></i>
-      <span>Studio Chat</span>
-    </div>
- 
-    <!-- Mode toggle pill — centered via margin:auto in CSS -->
-    <div class="chat-mode-pill" id="chatModePill">
-      <button id="btnModeAI"   onclick="setChatMode('ai')"   class="active">🤖 Joy</button>
-      <button id="btnModeLive" onclick="setChatMode('live')">💬 Live</button>
-    </div>
- 
-    <!-- Action icons -->
-    <div class="chat-header-actions">
-      <button class="chat-icon-btn danger" id="deleteChatBtn" onclick="openDeleteModal()" title="Clear chat">
-        <i class="fa-solid fa-trash-can"></i>
-      </button>
-      <button class="chat-icon-btn" id="closeChat" title="Close">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
-  </div>
- 
-  <!-- ── NAME PROMPT (shown when switching to Live mode, no name yet) ── -->
-  <div class="chat-name-prompt" id="chatNamePrompt">
-    <p>Welcome to live support 👋<br>What name should the admin see for your chat?</p>
-    <input type="text" id="liveNameInput" placeholder="Your name or nickname…" maxlength="40"
-           onkeypress="if(event.key==='Enter') confirmLiveName()">
-    <button onclick="confirmLiveName()">Start Live Chat</button>
-  </div>
- 
-  <!-- ── Messages ── -->
-  <div class="chat-messages" id="chatMessages"></div>
- 
-  <!-- ── Input bar ── -->
-  <div class="chat-input">
-    <input id="chatInput" placeholder="Type a message…" autocomplete="off">
-    <button id="sendBtn" aria-label="Send">
-      <i class="fa-solid fa-paper-plane"></i>
-    </button>
-  </div>
-</div>
- 
-<!-- Delete modal -->
-<div id="deleteModal" class="modal">
-  <div class="modal-box">
-    <p>Clear your chat history? This cannot be undone.</p>
-    <div class="modal-buttons">
-      <button id="confirmDelete">Yes, Clear</button>
-      <button id="cancelDelete">Cancel</button>
-    </div>
-  </div>
-</div>
- 
-
-    <!-- FOOTER -->
-<footer class="footer" id="contact">
-
-  <!-- Wave top -->
-  <div class="footer-wave">
-    <svg viewBox="0 0 1440 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-      <path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" fill="currentColor" opacity=".06"/>
-    </svg>
-  </div>
-
-  <!-- Main columns -->
-  <div class="footer-body" id="footerBody">
-    <div class="container">
-      <div class="row g-5">
-
-        <!-- Brand + social -->
-        <div class="col-lg-4 col-md-6">
-          <a class="footer-brand" href="index.html">
-            <img src="https://joyaltyphotography.netlify.app/images/templatemo-logo.png" alt="Joyalty Logo">
-            <span class="footer-brand-name">JO<span>Y</span>ALTY</span>
-          </a>
-          <p class="footer-tagline">
-            Capturing timeless moments through cinematic photography and professional storytelling.
-            Based in Shanzu, Mombasa, Kenya.
-          </p>
-          <div class="footer-social">
-            <a href="#" class="si-instagram" aria-label="Instagram" title="Instagram">
-              <i class="fa-brands fa-instagram"></i>
+          <!-- Brand + social -->
+          <div class="col-lg-4 col-md-6">
+            <a class="footer-brand" href="index.html">
+              <img src="https://joyaltyphotography.netlify.app/images/templatemo-logo.png" alt="Joyalty Logo">
+              <span class="footer-brand-name">JO<span>Y</span>ALTY</span>
             </a>
-            <a href="#" class="si-facebook" aria-label="Facebook" title="Facebook">
-              <i class="fa-brands fa-facebook-f"></i>
-            </a>
-            <a href="https://wa.me/254XXXXXXXXX" class="si-whatsapp" aria-label="WhatsApp" title="WhatsApp" target="_blank" rel="noopener">
-              <i class="fa-brands fa-whatsapp"></i>
-            </a>
-            <a href="#" class="si-tiktok" aria-label="TikTok" title="TikTok">
-              <i class="fa-brands fa-tiktok"></i>
-            </a>
-            <a href="#" class="si-youtube" aria-label="YouTube" title="YouTube">
-              <i class="fa-brands fa-youtube"></i>
-            </a>
-          </div>
-        </div>
-
-        <!-- Quick links -->
-        <div class="col-lg-2 col-md-3 col-6">
-          <div class="footer-col-title">Navigate</div>
-          <ul class="footer-links">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="portfolio.html">Portfolio</a></li>
-            <li><a href="services.html">Services</a></li>
-            <li><a href="about.html">About</a></li>
-            <li><a href="contact.html">Contact</a></li>
-          </ul>
-        </div>
-
-        <!-- Services -->
-        <div class="col-lg-2 col-md-3 col-6">
-          <div class="footer-col-title">Services</div>
-          <ul class="footer-links">
-            <li><a href="services.html">Wedding Photography</a></li>
-            <li><a href="services.html">Portrait Sessions</a></li>
-            <li><a href="services.html">Commercial Shoots</a></li>
-            <li><a href="services.html">Event Coverage</a></li>
-            <li><a href="services.html">Engagement Shoots</a></li>
-            <li><a href="services.html">Family Photography</a></li>
-          </ul>
-        </div>
-
-        <!-- Contact -->
-        <div class="col-lg-4 col-md-6">
-          <div class="footer-col-title">Contact Us</div>
-          <div class="footer-contact-item">
-            <i class="fa-solid fa-envelope"></i>
-            <a href="mailto:joyaltyphotography254@gmail.com">joyaltyphotography254@gmail.com</a>
-          </div>
-          <div class="footer-contact-item">
-            <i class="fa-solid fa-phone"></i>
-            <a href="tel:+254XXXXXXXXX">+254 XXX XXX XXX</a>
-          </div>
-          <div class="footer-contact-item">
-            <i class="fa-solid fa-location-dot"></i>
-            <span>Shanzu, Mombasa, Kenya</span>
-          </div>
-          <div class="footer-contact-item">
-            <i class="fa-regular fa-clock"></i>
-            <span>Mon – Sat &nbsp;·&nbsp; 9:00 AM – 7:00 PM</span>
-          </div>
-        </div>
-
-      </div><!-- /row -->
-
-      <!-- Newsletter strip -->
-      <div class="footer-newsletter">
-        <div class="row align-items-center g-3">
-          <div class="col-lg-5">
-            <div class="footer-newsletter-label">Stay in the loop</div>
-            <div class="footer-newsletter-title">Get photography tips &amp; offers</div>
-          </div>
-          <div class="col-lg-7">
-            <div class="footer-newsletter-form">
-              <input type="email" id="newsletterEmail" placeholder="Your email address" autocomplete="off">
-              <button class="btn primary-btn" onclick="subscribeNewsletter()">Subscribe</button>
+            <p class="footer-tagline">
+              Capturing timeless moments through cinematic photography and professional storytelling.
+              Based in Shanzu, Mombasa, Kenya.
+            </p>
+            <div class="footer-social">
+              <a href="#" class="si-instagram" aria-label="Instagram" title="Instagram">
+                <i class="fa-brands fa-instagram"></i>
+              </a>
+              <a href="#" class="si-facebook" aria-label="Facebook" title="Facebook">
+                <i class="fa-brands fa-facebook-f"></i>
+              </a>
+              <a href="https://wa.me/254XXXXXXXXX" class="si-whatsapp" aria-label="WhatsApp" title="WhatsApp"
+                target="_blank" rel="noopener">
+                <i class="fa-brands fa-whatsapp"></i>
+              </a>
+              <a href="#" class="si-tiktok" aria-label="TikTok" title="TikTok">
+                <i class="fa-brands fa-tiktok"></i>
+              </a>
+              <a href="#" class="si-youtube" aria-label="YouTube" title="YouTube">
+                <i class="fa-brands fa-youtube"></i>
+              </a>
             </div>
-            <div id="newsletterMsg" style="font-size:.8rem;margin-top:8px;display:none;opacity:.65;font-family:'Quicksand',sans-serif"></div>
+          </div>
+
+          <!-- Quick links -->
+          <div class="col-lg-2 col-md-3 col-6">
+            <div class="footer-col-title">Navigate</div>
+            <ul class="footer-links">
+              <li><a href="index.html">Home</a></li>
+              <li><a href="portfolio.html">Portfolio</a></li>
+              <li><a href="services.html">Services</a></li>
+              <li><a href="about.html">About</a></li>
+              <li><a href="contact.html">Contact</a></li>
+            </ul>
+          </div>
+
+          <!-- Services -->
+          <div class="col-lg-2 col-md-3 col-6">
+            <div class="footer-col-title">Services</div>
+            <ul class="footer-links">
+              <li><a href="services.html">Wedding Photography</a></li>
+              <li><a href="services.html">Portrait Sessions</a></li>
+              <li><a href="services.html">Commercial Shoots</a></li>
+              <li><a href="services.html">Event Coverage</a></li>
+              <li><a href="services.html">Engagement Shoots</a></li>
+              <li><a href="services.html">Family Photography</a></li>
+            </ul>
+          </div>
+
+          <!-- Contact -->
+          <div class="col-lg-4 col-md-6">
+            <div class="footer-col-title">Contact Us</div>
+            <div class="footer-contact-item">
+              <i class="fa-solid fa-envelope"></i>
+              <a href="mailto:joyaltyphotography254@gmail.com">joyaltyphotography254@gmail.com</a>
+            </div>
+            <div class="footer-contact-item">
+              <i class="fa-solid fa-phone"></i>
+              <a href="tel:+254XXXXXXXXX">+254 XXX XXX XXX</a>
+            </div>
+            <div class="footer-contact-item">
+              <i class="fa-solid fa-location-dot"></i>
+              <span>Shanzu, Mombasa, Kenya</span>
+            </div>
+            <div class="footer-contact-item">
+              <i class="fa-regular fa-clock"></i>
+              <span>Mon – Sat &nbsp;·&nbsp; 9:00 AM – 7:00 PM</span>
+            </div>
+          </div>
+
+        </div><!-- /row -->
+
+        <!-- Newsletter strip -->
+        <div class="footer-newsletter">
+          <div class="row align-items-center g-3">
+            <div class="col-lg-5">
+              <div class="footer-newsletter-label">Stay in the loop</div>
+              <div class="footer-newsletter-title">Get photography tips &amp; offers</div>
+            </div>
+            <div class="col-lg-7">
+              <div class="footer-newsletter-form">
+                <input type="email" id="newsletterEmail" placeholder="Your email address" autocomplete="off">
+                <button class="btn primary-btn" onclick="subscribeNewsletter()">Subscribe</button>
+              </div>
+              <div id="newsletterMsg"
+                style="font-size:.8rem;margin-top:8px;display:none;opacity:.65;font-family:'Quicksand',sans-serif">
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-    </div><!-- /container -->
-  </div><!-- /footer-body -->
+      </div><!-- /container -->
+    </div><!-- /footer-body -->
 
-  <!-- Bottom bar -->
-  <div class="footer-bottom">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col-md-6">
-          <span>© 2026 Joyalty Photography. All rights reserved. Registered in Kenya.</span>
-        </div>
-        <div class="col-md-6">
-          <div class="footer-bottom-links">
-            <a href="about.html#policies">Privacy Policy</a>
-            <a href="about.html#policies">Refund Policy</a>
-            <a href="contact.html">Contact</a>
+    <!-- Bottom bar -->
+    <div class="footer-bottom">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-md-6">
+            <span>© 2026 Joyalty Photography. All rights reserved. Registered in Kenya.</span>
+          </div>
+          <div class="col-md-6">
+            <div class="footer-bottom-links">
+              <a href="about.html#policies">Privacy Policy</a>
+              <a href="about.html#policies">Refund Policy</a>
+              <a href="contact.html">Contact</a>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
-</footer>
+  </footer>
 
-<!-- Footer entrance animation trigger -->
-<script>
-(function() {
-  const body = document.getElementById('footerBody');
-  if (!body) return;
-  const obs = new IntersectionObserver(entries => {
-    if (entries[0].isIntersecting) {
-      body.classList.add('footer-visible');
-      obs.disconnect();
-    }
-  }, { threshold: 0.1 });
-  obs.observe(body);
+  <!-- Footer entrance animation trigger -->
+  <script>
+    (function () {
+      const body = document.getElementById('footerBody');
+      if (!body) return;
+      const obs = new IntersectionObserver(entries => {
+        if (entries[0].isIntersecting) {
+          body.classList.add('footer-visible');
+          obs.disconnect();
+        }
+      }, { threshold: 0.1 });
+      obs.observe(body);
 
-  window.subscribeNewsletter = function() {
-    const email = document.getElementById('newsletterEmail').value.trim();
-    const msg   = document.getElementById('newsletterMsg');
-    if (!email || !/\S+@\S+\.\S+/.test(email)) {
-      msg.textContent = 'Please enter a valid email address.';
-      msg.style.display = 'block';
-      return;
-    }
-    msg.textContent = '✓ Thank you! We\'ll be in touch.';
-    msg.style.display = 'block';
-    document.getElementById('newsletterEmail').value = '';
-  };
-})();
-</script>
+      window.subscribeNewsletter = function () {
+        const email = document.getElementById('newsletterEmail').value.trim();
+        const msg = document.getElementById('newsletterMsg');
+        if (!email || !/\S+@\S+\.\S+/.test(email)) {
+          msg.textContent = 'Please enter a valid email address.';
+          msg.style.display = 'block';
+          return;
+        }
+        msg.textContent = '✓ Thank you! We\'ll be in touch.';
+        msg.style.display = 'block';
+        document.getElementById('newsletterEmail').value = '';
+      };
+    })();
+  </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
 
-    <script src="assets/js/portfolio.js"></script>
+  <script src="assets/js/portfolio.js"></script>
 
-    <script src="assets/js/landingpage.js"></script>
+  <script src="assets/js/landingpage.js"></script>
 
-    <script src="assets/js/toggletheme.js"></script>
+  <script src="assets/js/toggletheme.js"></script>
 
-    <script src="assets/js/aichat.js"></script>
+  <script src="assets/js/aichat.js"></script>
 
-    <script src="assets/js/preloader.js"></script>
+  <script src="assets/js/preloader.js"></script>
 
 
-    <script>
-      AOS.init();
-    </script>
-  </body>
+  <script>
+    AOS.init();
+  </script>
+</body>
+
 </html>

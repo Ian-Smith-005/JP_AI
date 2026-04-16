@@ -1,24 +1,24 @@
-.service-card h4{
-    font-family: 'Quintessential', serif;
-    color: gold;
+.service-card h4 {
+  font-family: "Quintessential", serif;
+  color: gold;
 }
-.service-card ul{
-    list-style: none;
+.service-card ul {
+  list-style: none;
 }
-/* From Uiverse.io by Nawsome */ 
+/* From Uiverse.io by Nawsome */
 .start-booking {
-    --background: #0f172a; /* dark navy background matching project dark theme */
+  --background: #0f172a; /* dark navy background matching project dark theme */
   --background-hover: #1e2937; /* slightly lighter navy hover */
   --background-left: #1e2937; /* panel left background */
-  --folder: #FFD700; /* gold folder accent matching logo */
-  --folder-inner: #F0E68C; /* khaki inner folder */
+  --folder: #ffd700; /* gold folder accent matching logo */
+  --folder-inner: #f0e68c; /* khaki inner folder */
   --paper: #f6ffff; /* light paper matching services background */
   --paper-lines: #0f172a; /* dark navy lines for contrast */
   --paper-behind: #e2e8f0; /* subtle light behind paper */
-  --pencil-cap: #FFD700; /* gold pencil cap */
-  --pencil-top: #00CED1; /* dark cyan pencil top */
+  --pencil-cap: #ffd700; /* gold pencil cap */
+  --pencil-top: #00ced1; /* dark cyan pencil top */
   --pencil-middle: #f6ffff; /* paper white middle */
-  --pencil-bottom: #20B2AA; /* light cyan bottom */
+  --pencil-bottom: #20b2aa; /* light cyan bottom */
   --shadow: rgba(13, 15, 25, 0.3); /* slightly darker shadow */
   border: none;
   outline: none;
@@ -74,7 +74,8 @@
   transform: perspective(120px) rotateY(var(--fr, 0deg));
 }
 
-.start-booking > div .folder:before, .start-booking > div .folder:after,
+.start-booking > div .folder:before,
+.start-booking > div .folder:after,
 .start-booking > div .folder .paper {
   content: "";
   position: absolute;
@@ -87,7 +88,10 @@
 }
 
 .start-booking > div .folder:before {
-  box-shadow: 0 1.5px 3px var(--shadow), 0 2.5px 5px var(--shadow), 0 3.5px 7px var(--shadow);
+  box-shadow:
+    0 1.5px 3px var(--shadow),
+    0 2.5px 5px var(--shadow),
+    0 3.5px 7px var(--shadow);
   transform: translateX(var(--fx, 0));
   transition: transform 0.4s ease var(--fd, 0.3s);
 }
@@ -111,7 +115,8 @@
   --b: var(--paper);
 }
 
-.start-booking > div .folder .paper:before, .start-booking > div .folder .paper:after {
+.start-booking > div .folder .paper:before,
+.start-booking > div .folder .paper:after {
   content: "";
   width: var(--wp, 14px);
   height: 2px;
@@ -121,7 +126,9 @@
   top: var(--tp, 3px);
   position: absolute;
   background: var(--paper-lines);
-  box-shadow: 0 12px 0 0 var(--paper-lines), 0 24px 0 0 var(--paper-lines);
+  box-shadow:
+    0 12px 0 0 var(--paper-lines),
+    0 24px 0 0 var(--paper-lines);
 }
 
 .start-booking > div .folder .paper:after {
@@ -143,11 +150,20 @@
   transition: transform 0.4s ease var(--pbd, 0s);
 }
 
-.start-booking > div .pencil:before, .start-booking > div .pencil:after {
+.start-booking > div .pencil:before,
+.start-booking > div .pencil:after {
   content: "";
   position: absolute;
   display: block;
-  background: var(--b, linear-gradient(var(--pencil-top) 55%, var(--pencil-middle) 55.1%, var(--pencil-middle) 60%, var(--pencil-bottom) 60.1%));
+  background: var(
+    --b,
+    linear-gradient(
+      var(--pencil-top) 55%,
+      var(--pencil-middle) 55.1%,
+      var(--pencil-middle) 60%,
+      var(--pencil-bottom) 60.1%
+    )
+  );
   width: var(--w, 5px);
   height: var(--h, 20px);
   border-radius: var(--br, 2px 2px 0 0);
@@ -171,7 +187,8 @@
   border-right: 1px solid var(--pencil-top);
 }
 
-.start-booking:before, .start-booking:after {
+.start-booking:before,
+.start-booking:after {
   content: "";
   position: absolute;
   width: 10px;
@@ -194,10 +211,10 @@
   --bg: var(--background-hover);
   --fx: -40px;
   --fr: -60deg;
-  --fd: .15s;
+  --fd: 0.15s;
   --fds: 0s;
   --pbx: 3px;
   --pby: -3px;
-  --pbd: .15s;
+  --pbd: 0.15s;
   --pex: -24px;
 }

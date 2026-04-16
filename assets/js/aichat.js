@@ -426,10 +426,11 @@ async function sendMessage() {
 sendBtn.addEventListener("click", () => playChatSound("send"));
 function playChatSound(type) {
   try {
-    const ctx  = new (window.AudioContext || window.webkitAudioContext)();
-    const osc  = ctx.createOscillator();
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    osc.connect(gain); gain.connect(ctx.destination);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
     if (type === "send") {
       osc.frequency.setValueAtTime(600, ctx.currentTime);
       osc.frequency.exponentialRampToValueAtTime(900, ctx.currentTime + 0.08);
@@ -441,7 +442,8 @@ function playChatSound(type) {
       gain.gain.setValueAtTime(0.14, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.28);
     }
-    osc.start(); osc.stop(ctx.currentTime + 0.3);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.3);
   } catch (_) {}
 }
 
@@ -491,13 +493,16 @@ document.addEventListener("keydown", (e) => {
     document.getElementById("deleteModal").style.display = "none";
 });
 
-//Simulating online 
+//Simulating online
 // Track user presence (add near top of aichat.js after sbClient init)
 if (sbClient && liveSessionId) {
   const pCh = sbClient.channel("user-presence");
-  pCh.subscribe(async status => {
+  pCh.subscribe(async (status) => {
     if (status === "SUBSCRIBED") {
-      await pCh.track({ user: liveSessionId, online_at: new Date().toISOString() });
+      await pCh.track({
+        user: liveSessionId,
+        online_at: new Date().toISOString(),
+      });
     }
   });
   // Untrack on page leave

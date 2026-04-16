@@ -1,0 +1,232 @@
+/* ============================================================
+   This is an enhanced progress bar that aims to be responsive
+   visible on all screen sizes without horizontal scrolling, and has a more modern, polished design with smooth animations and better
+   visual feedback for active/completed steps. It also includes a payment summary card and styled M-Pesa button states for the payment step.
+   Smith "Nimeiweka separate just for proper organization and to avoid bloating the main services-booking.css file. Feel free to adjust colors, spacing, and animations as needed!
+============================================================ */
+
+/* ── Progress wrapper ─────────────────────────────────────── */
+.progress-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 24px 16px 32px;
+  margin-bottom: 32px;
+  /* Prevent horizontal scroll on mobile */
+  overflow-x: auto;
+  overflow-y: visible;
+}
+
+/* ── Connecting line behind steps ─────────────────────────── */
+.progress-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 38px;
+  left: calc(12.5% + 20px);
+  right: calc(12.5% + 20px);
+  height: 2px;
+  background: rgba(255,255,255,.12);
+  z-index: 0;
+}
+
+/* ── Active fill line (animates via JS setting width) ─────── */
+#progressLine {
+  position: absolute;
+  top: 38px;
+  left: calc(12.5% + 20px);
+  height: 2px;
+  background: linear-gradient(90deg, #b8860b, #d4a84b);
+  z-index: 1;
+  width: 0%;
+  transition: width .4s cubic-bezier(.4, 0, .2, 1);
+  box-shadow: 0 0 8px rgba(212,168,75,.45);
+}
+
+/* ── Individual step ──────────────────────────────────────── */
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  min-width: 64px;
+  cursor: default;
+}
+
+/* Step circle */
+.progress-step span {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 700;
+  font-size: .9rem;
+
+  /* Default: inactive */
+  background: rgba(255,255,255,.06);
+  border: 2px solid rgba(255,255,255,.15);
+  color: rgba(255,255,255,.4);
+  transition: background .3s ease, border-color .3s ease, color .3s ease,
+              transform .3s cubic-bezier(.34,1.4,.64,1), box-shadow .3s ease;
+}
+
+/* Step label */
+.progress-step p {
+  font-family: 'Quicksand', sans-serif;
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.3);
+  transition: color .3s ease;
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* ── Active step ──────────────────────────────────────────── */
+.progress-step.active span {
+  background: linear-gradient(135deg, #b8860b, #d4a84b);
+  border-color: #d4a84b;
+  color: #0a0810;
+  transform: scale(1.15);
+  box-shadow: 0 0 0 4px rgba(212,168,75,.2), 0 4px 16px rgba(212,168,75,.4);
+}
+.progress-step.active p {
+  color: #d4a84b;
+  font-weight: 700;
+}
+
+/* ── Completed step ───────────────────────────────────────── */
+.progress-step.completed span {
+  background: rgba(34,197,94,.15);
+  border-color: #22c55e;
+  color: #22c55e;
+  transform: scale(1.0);
+  box-shadow: none;
+}
+.progress-step.completed span::before {
+  /* Replace number with checkmark */
+  content: '✓';
+  font-size: 1rem;
+  font-weight: 700;
+}
+/* Hide the number text when completed */
+.progress-step.completed span {
+  font-size: 0;
+  line-height: 0;
+}
+.progress-step.completed span::before {
+  font-size: 1rem;
+  line-height: 1;
+}
+.progress-step.completed p {
+  color: #22c55e;
+}
+
+/* ── Light theme overrides ────────────────────────────────── */
+[data-theme="light"] .progress-wrapper::before {
+  background: rgba(0,0,0,.1);
+}
+[data-theme="light"] .progress-step span {
+  background: rgba(0,0,0,.05);
+  border-color: rgba(0,0,0,.15);
+  color: rgba(0,0,0,.3);
+}
+[data-theme="light"] .progress-step p {
+  color: rgba(0,0,0,.35);
+}
+[data-theme="light"] .progress-step.active p  { color: #b8860b; }
+[data-theme="light"] .progress-step.active span { color: #fff; }
+[data-theme="light"] .progress-step.completed p { color: #16a34a; }
+
+/* ── Payment summary card ─────────────────────────────────── */
+.payment-summary-card {
+  background: rgba(212,168,75,.07);
+  border: 1px solid rgba(212,168,75,.2);
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin: 12px 0;
+}
+.ps-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  font-size: .88rem;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.ps-row:last-child { border-bottom: none; }
+.ps-row span   { color: rgba(255,255,255,.55); }
+.ps-row strong { color: var(--text, #f0ece4); }
+.ps-row.highlight { background: rgba(212,168,75,.1); border-radius: 6px; padding: 8px; margin: 4px -2px; }
+.ps-row.highlight strong { color: #d4a84b; font-size: 1rem; }
+
+[data-theme="light"] .payment-summary-card { background: rgba(0,0,0,.03); border-color: rgba(0,0,0,.1); }
+[data-theme="light"] .ps-row span   { color: rgba(0,0,0,.5); }
+[data-theme="light"] .ps-row strong { color: #1a1a2e; }
+
+/* ── M-Pesa button states ─────────────────────────────────── */
+.mpesa-btn-idle    { background: #16a34a; }
+.mpesa-btn-loading { background: #ca8a04 !important; cursor: not-allowed !important; }
+.mpesa-btn-waiting { background: #2563eb !important; cursor: not-allowed !important; }
+.mpesa-btn-success { background: #16a34a !important; cursor: not-allowed !important; }
+.mpesa-btn-error   { background: #dc2626 !important; }
+
+.btn-spinner {
+  display: inline-block;
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Payment info/error messages ──────────────────────────── */
+.payment-info-msg {
+  background: rgba(37,99,235,.1);
+  border: 1px solid rgba(37,99,235,.25);
+  color: #93c5fd;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: .84rem;
+  margin: 10px 0;
+  display: none;
+  animation: fadeIn .2s ease;
+}
+.payment-error {
+  background: rgba(239,68,68,.1);
+  border: 1px solid rgba(239,68,68,.25);
+  color: #fca5a5;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: .84rem;
+  margin: 10px 0;
+  display: none;
+  animation: fadeIn .2s ease;
+}
+@keyframes fadeIn { from { opacity:0; transform: translateY(4px); } to { opacity:1; transform: none; } }
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 576px) {
+  .progress-step span {
+    width: 34px;
+    height: 34px;
+    font-size: .8rem;
+  }
+  .progress-step p {
+    font-size: .64rem;
+  }
+  .progress-wrapper::before,
+  #progressLine {
+    top: 34px;
+  }
+}

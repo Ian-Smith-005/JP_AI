@@ -1,286 +1,295 @@
-    /* SMOOTH SCROLL */
-    html {
-        scroll-behavior: smooth;
-    }
-
-    body{
-        font-family:'Quicksand',sans-serif;
-        transition: background-color 0.5s ease, color 0.5s ease;
-    }
-
-    body[data-theme="light"]{
-        background:white;
-        color:#222;
-    }
-
-    body[data-theme="dark"]{
-        background:#0f172a;
-        color:#e2e8f0;
-    }
-
-    /* THEME TRANSITION OVERRIDES */
-    .custom-nav,
-    .services,
-    .service-card,
-    .review-card,
-    .hamburger span {
-        transition: background-color 0.5s ease, color 0.5s ease, box-shadow 0.5s ease;
-    }
-
-    body[data-theme="dark"] .custom-nav{
-        background:#1e2937;
-        box-shadow:0 3px 10px rgba(0,0,0,0.3);
-    }
-    body[data-theme="dark"] .nav-link{
-        color:#e2e8f0;
-    }
-    body[data-theme="dark"] .services{
-        background:#0f172a;
-    }
-    body[data-theme="dark"] .service-card{
-        background:#1e2937;
-        color:#e2e8f0;
-    }
-    body[data-theme="dark"] .review-card{
-        background:#1e2937;
-        color:#e2e8f0;
-    }
-    body[data-theme="dark"] .hamburger span{
-        background:#e2e8f0;
-    }
-
-    .section-title{
-        font-family:'Quintessential',serif;
-        font-size:40px;
-        margin-bottom:40px;
-        color:darkcyan;
-    }
-
-
-
-    /* HERO - FULLY RESTORED */
-    .hero{
-        height:100vh;
-        background:url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee") center/cover fixed;
-        display:flex;
-        align-items:center;
-        position:relative;
-        overflow:hidden;
-    }
-
-    .hero-overlay{
-        position:absolute;
-        width:100%;
-        height:100%;
-        background:rgba(0,0,0,0.35);
-        z-index:1;
-    }
-
-    .hero-content{
-        position:relative;
-        z-index:3;
-    }
-
-    .hero-content h1,
-    .hero-content p{
-        color:white !important;
-    }
-
-    .hero-title{
-        font-size:52px;
-    }
-
-    #typing{
-        color:gold;
-    }
-
-    .cursor{
-        animation:blink 1s infinite;
-    }
-
-    @keyframes blink{
-        50%{opacity:0;}
-    }
-
-    /* WAVES - STATIC BASE + ONLY TOP MOVES (taller SVG + anchored bottom) */
-.wave-container{
-    position:absolute;
-    bottom:0;
-    left:0;
-    width:100%;
-    height:200px;
-    overflow:hidden;
-    z-index:2;
-    pointer-events:none;
+/* SMOOTH SCROLL */
+html {
+  scroll-behavior: smooth;
 }
 
-.wave{
-    position:absolute;
-    bottom:-60px;           /* extra height below container = static base */
-    left:0;
-    width:100%;             /* fix */
-    height:280px;           /* taller so only crest moves visibly */
-    animation: waveBob 4s ease-in-out infinite;
+body {
+  font-family: "Quicksand", sans-serif;
+  transition:
+    background-color 0.5s ease,
+    color 0.5s ease;
 }
 
-    .wave2{
-        animation-duration: 5.5s;
-        animation-delay: 0.8s;
-    }
+body[data-theme="light"] {
+  background: white;
+  color: #222;
+}
 
-    @keyframes waveBob {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-45px); }
-    }
+body[data-theme="dark"] {
+  background: #0f172a;
+  color: #e2e8f0;
+}
 
-    /* Light theme waves */
-    body[data-theme="light"] .wave1 path{
-        fill:#f8f9fa;
-        fill-opacity:0.65;
-    }
-    body[data-theme="light"] .wave2 path{
-        fill:#e9ecef;
-        fill-opacity:0.45;
-    }
+/* THEME TRANSITION OVERRIDES */
+.custom-nav,
+.services,
+.service-card,
+.review-card,
+.hamburger span {
+  transition:
+    background-color 0.5s ease,
+    color 0.5s ease,
+    box-shadow 0.5s ease;
+}
 
-    /* Dark theme waves */
-    body[data-theme="dark"] .wave1 path{
-        fill:#1e2937;
-        fill-opacity:0.65;
-    }
-    body[data-theme="dark"] .wave2 path{
-        fill:#334155;
-        fill-opacity:0.45;
-    }
+body[data-theme="dark"] .custom-nav {
+  background: #1e2937;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+body[data-theme="dark"] .nav-link {
+  color: #e2e8f0;
+}
+body[data-theme="dark"] .services {
+  background: #0f172a;
+}
+body[data-theme="dark"] .service-card {
+  background: #1e2937;
+  color: #e2e8f0;
+}
+body[data-theme="dark"] .review-card {
+  background: #1e2937;
+  color: #e2e8f0;
+}
+body[data-theme="dark"] .hamburger span {
+  background: #e2e8f0;
+}
 
-    /* GALLERY - LAZY LOADING + SAME DIMENSIONS */
-    .gallery img{
-        width:100%;
-        height:280px;
-        object-fit:cover;
-        border-radius:10px;
-        transition:0.4s;
-    }
+.section-title {
+  font-family: "Quintessential", serif;
+  font-size: 40px;
+  margin-bottom: 40px;
+  color: darkcyan;
+}
 
-    .gallery img:hover{
-        transform:scale(1.08);
-        box-shadow:0 0 20px rgba(0,139,139,0.5);
-    }
+/* HERO - FULLY RESTORED */
+.hero {
+  height: 100vh;
+  background: url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee")
+    center/cover fixed;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
 
-    /* SERVICES */
-    .services{
-        padding:100px 0;
-        background:#f6ffff;
-    }
+.hero-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 1;
+}
 
-    .service-card{
-        padding:20px;
-        border-radius:12px;
-        background:white;
-        transition:0.3s;
-    }
+.hero-content {
+  position: relative;
+  z-index: 3;
+}
 
-    .service-card img{
-        width:100%;
-        height:220px;
-        object-fit:cover;
-        border-radius:10px;
-        margin-bottom:18px;
-        transition:0.4s;
-    }
+.hero-content h1,
+.hero-content p {
+  color: white !important;
+}
 
-    .service-card:hover img{
-        transform:scale(1.05);
-    }
+.hero-title {
+  font-size: 52px;
+}
 
-    .service-card:hover{
-        transform:translateY(-6px);
-        box-shadow:0 0 20px rgba(0,139,139,0.3);
-    }
+#typing {
+  color: gold;
+}
 
-    /* REVIEWS */
-    .reviews{
-        padding:100px 0;
-    }
+.cursor {
+  animation: blink 1s infinite;
+}
 
-    .review-card{
-        background:white;
-        padding:30px;
-        border-radius:12px;
-        text-align:center;
-        box-shadow:0 5px 20px rgba(0,0,0,0.08);
-    }
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
 
-    .review-card img{
-        width:70px;
-        height:70px;
-        border-radius:50%;
-        margin-bottom:15px;
-    }
+/* WAVES - STATIC BASE + ONLY TOP MOVES (taller SVG + anchored bottom) */
+.wave-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  z-index: 2;
+  pointer-events: none;
+}
 
-    .stars{
-        color:gold;
-    }
+.wave {
+  position: absolute;
+  bottom: -60px; /* extra height below container = static base */
+  left: 0;
+  width: 100%; /* fix */
+  height: 280px; /* taller so only crest moves visibly */
+  animation: waveBob 4s ease-in-out infinite;
+}
 
-    /* BUTTONS */
-    .primary-btn,
-    .outline-btn,
-    .section-btn{
-        position:relative;
-        display:inline-flex;
-        align-items:center;
-        justify-content:center;
-        gap:10px;
-        background-color:darkcyan;
-        color:white;
-        border:none;
-        padding:14px 32px;
-        border-radius:10px;
-        font-size:16px;
-        font-weight:600;
-        transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        text-transform:uppercase;
-        letter-spacing:1px;
-        overflow:hidden;
-    }
+.wave2 {
+  animation-duration: 5.5s;
+  animation-delay: 0.8s;
+}
 
-    .outline-btn{
-        background-color:transparent;
-        color:gold;
-        border:2px solid gold;
-    }
+@keyframes waveBob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-45px);
+  }
+}
 
-    .primary-btn:hover,
-    .section-btn:hover,
-    .outline-btn:hover{
-        transform:scale(1.08);
-        box-shadow:0 8px 25px rgba(0,139,139,0.3);
-    }
+/* Light theme waves */
+body[data-theme="light"] .wave1 path {
+  fill: #f8f9fa;
+  fill-opacity: 0.65;
+}
+body[data-theme="light"] .wave2 path {
+  fill: #e9ecef;
+  fill-opacity: 0.45;
+}
 
-    .primary-btn::after,
-    .section-btn::after,
-    .outline-btn::after{
-        content:"\f061";
-        font-family:"Font Awesome 6 Free";
-        font-weight:900;
-        position:absolute;
-        right:20px;
-        top:50%;
-        transform:translateY(-50%);
-        opacity:0;
-        transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        font-size:1.1rem;
-    }
+/* Dark theme waves */
+body[data-theme="dark"] .wave1 path {
+  fill: #1e2937;
+  fill-opacity: 0.65;
+}
+body[data-theme="dark"] .wave2 path {
+  fill: #334155;
+  fill-opacity: 0.45;
+}
 
-    .primary-btn:hover::after,
-    .section-btn:hover::after,
-    .outline-btn:hover::after{
-        opacity:1;
-        right:14px;
-    }
+/* GALLERY - LAZY LOADING + SAME DIMENSIONS */
+.gallery img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  border-radius: 10px;
+  transition: 0.4s;
+}
 
-    .outline-btn::after{
-        color:gold;
-    }
+.gallery img:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 20px rgba(0, 139, 139, 0.5);
+}
 
-   
+/* SERVICES */
+.services {
+  padding: 100px 0;
+  background: #f6ffff;
+}
+
+.service-card {
+  padding: 20px;
+  border-radius: 12px;
+  background: white;
+  transition: 0.3s;
+}
+
+.service-card img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 18px;
+  transition: 0.4s;
+}
+
+.service-card:hover img {
+  transform: scale(1.05);
+}
+
+.service-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 0 20px rgba(0, 139, 139, 0.3);
+}
+
+/* REVIEWS */
+.reviews {
+  padding: 100px 0;
+}
+
+.review-card {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.review-card img {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  margin-bottom: 15px;
+}
+
+.stars {
+  color: gold;
+}
+
+/* BUTTONS */
+.primary-btn,
+.outline-btn,
+.section-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background-color: darkcyan;
+  color: white;
+  border: none;
+  padding: 14px 32px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  overflow: hidden;
+}
+
+.outline-btn {
+  background-color: transparent;
+  color: gold;
+  border: 2px solid gold;
+}
+
+.primary-btn:hover,
+.section-btn:hover,
+.outline-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 8px 25px rgba(0, 139, 139, 0.3);
+}
+
+.primary-btn::after,
+.section-btn::after,
+.outline-btn::after {
+  content: "\f061";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 1.1rem;
+}
+
+.primary-btn:hover::after,
+.section-btn:hover::after,
+.outline-btn:hover::after {
+  opacity: 1;
+  right: 14px;
+}
+
+.outline-btn::after {
+  color: gold;
+}
