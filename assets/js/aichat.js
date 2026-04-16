@@ -491,6 +491,18 @@ document.addEventListener("keydown", (e) => {
     document.getElementById("deleteModal").style.display = "none";
 });
 
+//Simulating online 
+// Track user presence (add near top of aichat.js after sbClient init)
+if (sbClient && liveSessionId) {
+  const pCh = sbClient.channel("user-presence");
+  pCh.subscribe(async status => {
+    if (status === "SUBSCRIBED") {
+      await pCh.track({ user: liveSessionId, online_at: new Date().toISOString() });
+    }
+  });
+  // Untrack on page leave
+  window.addEventListener("beforeunload", () => pCh.untrack());
+}
 // ── Escape HTML ────────────────────────────────────────────────
 function _esc(s) {
   return String(s || "")
