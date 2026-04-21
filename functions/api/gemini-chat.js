@@ -2,7 +2,7 @@
 export async function onRequestPost(context) {
   const { request, env } = context;
 
-  if (!env.GEMINI_API_KEY) {
+   if (!env.GEMINI_API_KEY) {
     return new Response(
       JSON.stringify({ error: "GEMINI_API_KEY is missing from env" }),
       { status: 200, headers: corsHeaders() }, // 200 so you can read it easily

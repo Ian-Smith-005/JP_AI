@@ -1,0 +1,347 @@
+/* ============================================================
+   JOYALTY — aichat-additions.css
+   Append to assets/css/aichat.css
+   Adds: reply bar, ticks, file bubbles, audio, lightbox,
+         name prompt, mode pills, typing indicator
+============================================================ */
+
+/* ── Mode pills ────────────────────────────────────────────── */
+.chat-mode-pills {
+  display: flex;
+  gap: 6px;
+  padding: 8px 14px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 4px;
+}
+.mode-pill {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(240, 236, 228, 0.45);
+  border-radius: 20px;
+  padding: 6px 0;
+  font-family: "Quicksand", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    border-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.mode-pill.active {
+  background: linear-gradient(135deg, #b8860b, #d4a84b);
+  border-color: #d4a84b;
+  color: #0a0810;
+}
+
+/* ── Username prompt ───────────────────────────────────────── */
+.chat-name-prompt {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 20px;
+  gap: 14px;
+  text-align: center;
+  flex: 1;
+}
+.chat-name-prompt.visible {
+  display: flex;
+}
+.chat-name-prompt h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #f0ece4;
+}
+.chat-name-prompt p {
+  font-size: 0.78rem;
+  color: rgba(240, 236, 228, 0.5);
+  line-height: 1.5;
+}
+.chat-name-prompt input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(212, 168, 75, 0.2);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: #f0ece4;
+  font-family: "Quicksand", sans-serif;
+  font-size: 0.88rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.chat-name-prompt input:focus {
+  border-color: #d4a84b;
+}
+.chat-name-prompt button {
+  width: 100%;
+  background: linear-gradient(135deg, #b8860b, #d4a84b);
+  color: #0a0810;
+  border: none;
+  border-radius: 10px;
+  padding: 11px;
+  font-family: "Quicksand", sans-serif;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.chat-name-prompt button:hover {
+  opacity: 0.88;
+}
+
+/* ── System message ────────────────────────────────────────── */
+.chat-system-msg {
+  text-align: center;
+  font-size: 0.72rem;
+  color: rgba(240, 236, 228, 0.3);
+  padding: 4px 8px;
+  font-style: italic;
+}
+
+/* ── Reply bar ─────────────────────────────────────────────── */
+.reply-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(212, 168, 75, 0.07);
+  border-top: 1px solid rgba(212, 168, 75, 0.15);
+  border-left: 3px solid #d4a84b;
+  padding: 7px 12px;
+  font-size: 0.78rem;
+  color: #d4a84b;
+}
+.reply-bar-inner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+.reply-bar-inner span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgba(240, 236, 228, 0.5);
+  font-size: 0.76rem;
+}
+.reply-bar button {
+  background: none;
+  border: none;
+  color: rgba(240, 236, 228, 0.4);
+  cursor: pointer;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  padding: 2px;
+}
+
+/* ── Read ticks ────────────────────────────────────────────── */
+.ticks {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.68rem;
+  margin-left: 3px;
+  flex-shrink: 0;
+}
+.ticks.grey {
+  color: rgba(240, 236, 228, 0.35);
+}
+.ticks.blue {
+  color: #53bdeb;
+}
+.msg-meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2px;
+  margin-top: 3px;
+}
+.message.user .msg-meta {
+  justify-content: flex-end;
+}
+.message.bot .msg-meta {
+  justify-content: flex-start;
+}
+.msg-time {
+  font-size: 0.62rem;
+  color: rgba(240, 236, 228, 0.3);
+}
+
+/* ── Message quote strip ───────────────────────────────────── */
+.msg-quote {
+  background: rgba(212, 168, 75, 0.08);
+  border-left: 3px solid #d4a84b;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 0.72rem;
+  color: #d4a84b;
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 240px;
+}
+.msg-quote i {
+  margin-right: 4px;
+  font-size: 0.62rem;
+  opacity: 0.7;
+}
+
+/* ── Image bubble ──────────────────────────────────────────── */
+.msg-img {
+  max-width: 200px;
+  max-height: 180px;
+  border-radius: 10px;
+  cursor: zoom-in;
+  display: block;
+  object-fit: cover;
+}
+
+/* ── File bubble ───────────────────────────────────────────── */
+.msg-file {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: #f0ece4;
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-decoration: none;
+  max-width: 220px;
+}
+.msg-file.pdf-file {
+  border-color: rgba(239, 68, 68, 0.2);
+}
+.msg-file span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+/* ── Audio player ──────────────────────────────────────────── */
+.msg-audio {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 22px;
+  padding: 8px 12px;
+  min-width: 170px;
+  max-width: 220px;
+}
+.audio-play-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #d4a84b;
+  color: #0a0810;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+.audio-bar {
+  flex: 1;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.audio-progress {
+  height: 100%;
+  background: #d4a84b;
+  width: 0%;
+  transition: width 0.1s linear;
+}
+.audio-dur {
+  font-size: 0.66rem;
+  color: rgba(240, 236, 228, 0.35);
+  flex-shrink: 0;
+  min-width: 26px;
+}
+
+/* ── Chat input bar additions ──────────────────────────────── */
+.chat-input-extras {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 4px;
+}
+.chat-extra-btn {
+  background: none;
+  border: none;
+  color: rgba(240, 236, 228, 0.4);
+  cursor: pointer;
+  font-size: 0.88rem;
+  padding: 6px;
+  border-radius: 8px;
+  transition:
+    color 0.15s,
+    background 0.15s;
+  flex-shrink: 0;
+}
+.chat-extra-btn:hover {
+  color: #d4a84b;
+  background: rgba(212, 168, 75, 0.08);
+}
+.chat-extra-btn.recording {
+  color: #ef4444;
+  animation: recPulse 0.8s ease-in-out infinite;
+}
+@keyframes recPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* ── Admin typing indicator (user side) ────────────────────── */
+.message.bot.typing {
+  display: flex;
+  gap: 4px;
+  padding: 9px 13px;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 4px 12px 12px 12px;
+  width: fit-content;
+  align-items: center;
+}
+.message.bot.typing span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #d4a84b;
+  opacity: 0.5;
+  animation: typDot 0.9s infinite;
+}
+.message.bot.typing span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.message.bot.typing span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes typDot {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-4px);
+  }
+}
