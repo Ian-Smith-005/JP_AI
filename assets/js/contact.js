@@ -1,3 +1,13 @@
+/*============================================================
+    By Smith
+   JOYALTY — contact.js
+   ✓ Client-side validation (name, email, message required)
+   ✓ Loading state on submit button
+   ✓ Success/error feedback messages
+   ✓ Graceful handling of network/server errors
+   ✓ Smooth scroll to feedback on submit
+=============================================================*/
+
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("contactForm");
   const btn = document.getElementById("contactSubmitBtn");

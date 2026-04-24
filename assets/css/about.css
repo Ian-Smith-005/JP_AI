@@ -1,3 +1,14 @@
+/*================
+    By Smith
+    JOYALTY — about.css
+    ✓ Hero section with badge and headline
+    ✓ Stats row with large numbers and labels
+    ✓ Story section with image and text
+    ✓ Value cards (reuse service-card styles)
+    ✓ Team section with image overlay on hover
+    ✓ Policy accordion with icons and smooth transitions
+    ✓ Notice box style for important info
+=================================*/
 .about-hero {
   margin-top: 120px;
   padding: 80px 0 60px;

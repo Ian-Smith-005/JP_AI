@@ -1,6 +1,8 @@
 AOS.init({ duration: 650, once: true });
 
 // ── Product catalogue ─────────────────────────────────────────
+// ── These are random non real products
+// ── This page for future production will be linked to DB to allow admin to live upload sites
 const PRODUCTS = [
   {
     id: 1,

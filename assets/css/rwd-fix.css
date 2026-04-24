@@ -1,9 +1,8 @@
 /* ============================================================
-   JOYALTY PHOTOGRAPHY — responsive-fix.css
-   Global mobile overflow and layout fixes.
-   Add to ALL pages: index.html, services.html, portfolio.html,
-   contact.html — inside <head> AFTER all other CSS links.
-   <link rel="stylesheet" href="assets/css/responsive-fix.css">
+   By Smith
+   JOYALTY PHOTOGRAPHY — rwd-fix.css
+   ✓ Responsive fixes for navbar, hero, gallery, services, reviews, chat widget, booking form, portfolio, and footer
+   ✓ Media queries for various breakpoints to ensure mobile-friendly design
 ============================================================ */
 
 /* ── 1. Root: prevent horizontal overflow on every page ─────── */

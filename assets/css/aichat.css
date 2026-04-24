@@ -1,9 +1,8 @@
 /* ============================================================
-   JOYALTY — aichat.css  (Final Enhanced)
-   Matches HTML: .chat-header-title / .chat-mode-pill /
-   .chat-header-actions / .chat-icon-btn / .chat-name-prompt /
-   .chat-messages / .chat-input / #sendBtn / .modal / .modal-box
-   Cinematic dark gold aesthetic.
+By Smith
+JOYALTY — aichat.css
+✓ FAB toggle with pulse animation
+✓ Glassmorphic chat container with header, messages, and input 
 ============================================================ */
 
 :root {

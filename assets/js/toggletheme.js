@@ -1,3 +1,8 @@
+/*=====================================
+By Smith
+As it says mahn
+
+========================================*/
 /* THEME TOGGLE + LOCAL STORAGE */
 const themeToggle = document.getElementById("themeToggle");
 

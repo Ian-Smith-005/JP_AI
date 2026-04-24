@@ -1,4 +1,12 @@
-/* SMOOTH SCROLL */
+/* ============================================================
++By Smith
+JOYALTY PHOTOGRAPHY — landingpage.css
+✓ Hero section with fixed background and animated waves
+✓ Gallery with hover zoom and shadow
+✓ Services with image zoom and card lift on hover
+✓ Reviews with star ratings and card style
+✓ Unified button styles (see buttons.css)
+============================================================ */
 html {
   scroll-behavior: smooth;
 }

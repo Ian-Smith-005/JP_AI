@@ -1,3 +1,10 @@
+/*============================================================
+    By Smith
+   JOYALTY — portfolio.js
+   ✓ Filterable portfolio grid (All, Web Design, Graphic Design, etc.)
+   ✓ Active state on filter buttons
+   ✓ Smooth show/hide animations for portfolio items
+==============================================================*/
 const buttons = document.querySelectorAll(".filter-btn");
 const items = document.querySelectorAll(".portfolio-item");
 

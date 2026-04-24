@@ -1,5 +1,7 @@
 /* ============================================================
-   JOYALTY — aichat.js  (full rewrite)
+  By Smith
+    Due to the error of the initial version where users could pick same names 
+    we have decided to make the names unique by implementing the following
    ✓ Unique username generation / reservation via /api/chat-username
    ✓ File attachments: image, PDF, audio, voice recording
    ✓ In-chat lightbox for images/voice, PDF modal viewer
@@ -7,6 +9,7 @@
    ✓ Read receipts (grey tick = sent, blue = read by admin)
    ✓ Typing indicator broadcast via Supabase Realtime presence
    ✓ Supabase Storage file uploads
+   En route is the design of a UI interface that resembles the whatsapp UI
 ============================================================ */
 
 // ── Supabase client (browser anon key — loaded via /api/config) ─

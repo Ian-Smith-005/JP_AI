@@ -1,3 +1,13 @@
+  /*============================================================
+   By Smith
+   JOYALTY — landingpage.js
+   ✓ AOS scroll animations (fade-up, fade-right, fade-left)
+   ✓ Typing effect on hero headline
+   ✓ Swiper.js for review carousel (autoplay, responsive breakpoints)
+   ✓ Hamburger menu morphs to X on open/close
+   ✓ Click outside menu to close (mobile)
+   ✓ Parallax scrolling effect on wave SVGs
+============================================================= */
 AOS.init({
   duration: 1000,
   once: false,

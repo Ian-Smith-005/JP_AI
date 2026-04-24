@@ -1,3 +1,10 @@
+/* ============================================================
++   By Smith
++    JOYALTY PHOTOGRAPHY — services.css
++    ✓ Clean, modern services page with responsive grid layout
++    ✓ Service cards with image zoom and hover lift
++    ✓ Booking form with progress bar and smooth transitions
+============================================================ */
 .service-card h4 {
   font-family: "Quintessential", serif;
   color: gold;
