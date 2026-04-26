@@ -1,38 +1,45 @@
 /* ============================================================
-  By Smith
-    Due to the error of the initial version where users could pick same names 
-    we have decided to make the names unique by implementing the following
-   ✓ Unique username generation / reservation via /api/chat-username
-   ✓ File attachments: image, PDF, audio, voice recording
-   ✓ In-chat lightbox for images/voice, PDF modal viewer
-   ✓ Message quoting / reply threads
-   ✓ Read receipts (grey tick = sent, blue = read by admin)
-   ✓ Typing indicator broadcast via Supabase Realtime presence
-   ✓ Supabase Storage file uploads
-   En route is the design of a UI interface that resembles the whatsapp UI
+   JOYALTY — aichat.js  (user-side chat widget)
+
+   BUG FIX: Admin replies not showing on user end.
+   
+   ROOT CAUSE: The Realtime subscription used a server-side
+   filter  `session_id=eq.${liveSessionId}`.  Supabase only
+   evaluates this filter when the table has REPLICA IDENTITY
+   FULL.  Without it, filtered subscriptions receive NO events
+   silently — so admin messages inserted into the DB never
+   triggered the user's listener.
+
+   FIX APPLIED:
+   1. Subscribe to the channel WITHOUT a server-side filter.
+   2. Filter by session_id in the JS callback instead.
+   3. Added `_subscribeToLive()` call on session init so the
+      channel is always active when the user is chatting.
+   
+   Also run replica-identity-fix.sql in Supabase SQL Editor
+   as a belt-and-braces fix for UPDATE events.
 ============================================================ */
 
-// ── Supabase client (browser anon key — loaded via /api/config) ─
+// ── Supabase client ───────────────────────────────────────────
 let sb = null;
-let presenceCh = null;
 let liveCh = null;
+let presenceCh = null;
 
 async function initSupabase() {
   try {
     const r = await fetch("/api/config");
     const d = await r.json();
-    if (
-      d.supabaseUrl &&
-      d.supabaseAnon &&
-      !d.supabaseUrl.includes("YOUR_PROJECT")
-    ) {
+    if (d.supabaseUrl && d.supabaseAnon) {
       sb = supabase.createClient(d.supabaseUrl, d.supabaseAnon);
+      console.log("[chat] Supabase ready");
     }
-  } catch (_) {}
+  } catch (e) {
+    console.warn("[chat] Supabase config failed:", e.message);
+  }
 }
 initSupabase();
 
-// ── DOM ────────────────────────────────────────────────────────
+// ── DOM refs ──────────────────────────────────────────────────
 const chatToggle = document.getElementById("chatToggle");
 const chatContainer = document.getElementById("chatContainer");
 const closeChat = document.getElementById("closeChat");
@@ -42,7 +49,7 @@ const sendBtn = document.getElementById("sendBtn");
 const namePrompt = document.getElementById("chatNamePrompt");
 const liveNameInput = document.getElementById("liveNameInput");
 
-// ── State ──────────────────────────────────────────────────────
+// ── State ─────────────────────────────────────────────────────
 let conversation = _load("studioChat") || [];
 let userName = _load("studioUser") || null;
 let memory = _load("studioMemory") || {};
@@ -52,14 +59,15 @@ let liveMessages = _load("joyalty_live_msgs") || [];
 let liveSessionId = _load("joyalty_live_sid") || null;
 let liveName = _load("joyalty_live_name") || null;
 let chatOpen = false;
-let replyTo = null; // { id, sender, text } for quoting
+let replyTo = null;
 let isTyping = false;
 let typingTimer = null;
-let adminTyping = false;
 let mediaRecorder = null;
 let audioChunks = [];
+let audioPlayers = {};
+let sentMsgIds = new Set(); // track our own sent messages to avoid echo
 
-// ── Storage helpers ────────────────────────────────────────────
+// ── Storage helpers ───────────────────────────────────────────
 function _save(k, v) {
   try {
     localStorage.setItem(k, JSON.stringify(v));
@@ -78,6 +86,12 @@ function _del(k) {
     localStorage.removeItem(k);
   } catch (_) {}
 }
+function _esc(s) {
+  return String(s || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
 function _delay(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
@@ -86,7 +100,7 @@ function _saveConv() {
   _save("studioChat", conversation);
 }
 
-// ── Pills ──────────────────────────────────────────────────────
+// ── Mode pills ────────────────────────────────────────────────
 function _refreshPill() {
   document
     .getElementById("btnModeAI")
@@ -96,33 +110,33 @@ function _refreshPill() {
     ?.classList.toggle("active", chatMode === "live");
 }
 
-// ── Open / Close ───────────────────────────────────────────────
+// ── Open / Close ──────────────────────────────────────────────
 function toggleChat() {
   chatOpen = !chatOpen;
-  chatContainer.classList.toggle("active", chatOpen);
+  chatContainer?.classList.toggle("active", chatOpen);
   if (chatOpen) {
     _refreshPill();
-    if (!chatMessages.children.length) _enterMode(chatMode);
+    if (!chatMessages?.children.length) _enterMode(chatMode);
     setTimeout(() => chatInput?.focus(), 300);
-  } else _stopLive();
+  } else {
+    _stopLive();
+  }
 }
 if (chatToggle) chatToggle.onclick = toggleChat;
 if (closeChat)
   closeChat.onclick = () => {
     chatOpen = false;
-    chatContainer.classList.remove("active");
+    chatContainer?.classList.remove("active");
     _stopLive();
   };
 
-// ── Mode switch ────────────────────────────────────────────────
+// ── Mode switch ───────────────────────────────────────────────
 window.setChatMode = function (mode) {
   chatMode = mode;
   _save("joyalty_chat_mode", mode);
   _refreshPill();
-  chatMessages.innerHTML = "";
+  if (chatMessages) chatMessages.innerHTML = "";
   namePrompt?.classList.remove("visible");
-  document.querySelector(".chat-input") &&
-    (document.querySelector(".chat-input").style.display = "");
   _stopLive();
   _enterMode(mode);
 };
@@ -130,7 +144,7 @@ window.setChatMode = function (mode) {
 function _enterMode(mode) {
   if (mode === "ai") {
     _renderAIHistory();
-    if (!chatMessages.children.length)
+    if (!chatMessages?.children.length)
       typeMessage(
         userName
           ? `Welcome back, ${userName}! 👋 How can I help?`
@@ -142,18 +156,18 @@ function _enterMode(mode) {
   }
 }
 
-// ── AI mode ────────────────────────────────────────────────────
+// ── AI mode ───────────────────────────────────────────────────
 function _renderAIHistory() {
   conversation.forEach((m) => {
     const el = document.createElement("div");
     el.className = `message ${m.type}`;
     el.textContent = m.text;
-    chatMessages.appendChild(el);
+    chatMessages?.appendChild(el);
   });
-  chatMessages.scrollTop = chatMessages.scrollHeight;
+  if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-// ── Live mode ──────────────────────────────────────────────────
+// ── Live mode entry ───────────────────────────────────────────
 function _enterLive() {
   if (!liveName) {
     _showNamePrompt();
@@ -164,9 +178,9 @@ function _enterLive() {
 
 function _showNamePrompt() {
   namePrompt?.classList.add("visible");
-  chatMessages.style.display = "none";
-  document.querySelector(".chat-input") &&
-    (document.querySelector(".chat-input").style.display = "none");
+  if (chatMessages) chatMessages.style.display = "none";
+  const bar = document.querySelector(".chat-input");
+  if (bar) bar.style.display = "none";
   liveNameInput?.focus();
 }
 
@@ -174,13 +188,11 @@ window.confirmLiveName = async function () {
   const input = liveNameInput?.value.trim();
   if (!input) {
     if (liveNameInput) {
-      liveNameInput.placeholder = "Enter a name…";
+      liveNameInput.placeholder = "Enter a name or username…";
       liveNameInput.focus();
     }
     return;
   }
-
-  // Validate / reserve username
   const btn = document.querySelector(".chat-name-prompt button");
   if (btn) btn.textContent = "Checking…";
 
@@ -191,30 +203,26 @@ window.confirmLiveName = async function () {
       body: JSON.stringify({ username: input }),
     });
     const data = await r.json();
-
-    if (data.error && r.status === 409) {
+    if (r.status === 409) {
       if (liveNameInput) {
         liveNameInput.value = "";
-        liveNameInput.placeholder = data.error;
+        liveNameInput.placeholder = data.error || "Name taken — try another.";
         liveNameInput.focus();
       }
       if (btn) btn.textContent = "Start Live Chat";
       return;
     }
     if (data.error) {
-      if (liveNameInput) {
-        liveNameInput.placeholder = data.error;
-      }
+      if (liveNameInput) liveNameInput.placeholder = data.error;
       if (btn) btn.textContent = "Start Live Chat";
       return;
     }
-
     liveName = data.username;
     liveSessionId = data.sessionId;
     _save("joyalty_live_name", liveName);
     _save("joyalty_live_sid", liveSessionId);
   } catch (_) {
-    // Fallback: use as display name, generate session locally
+    // Fallback: use as display name
     liveName = input.toLowerCase().replace(/\s+/g, "_");
     liveSessionId = liveName + "-" + Date.now();
     _save("joyalty_live_name", liveName);
@@ -222,89 +230,108 @@ window.confirmLiveName = async function () {
   }
 
   namePrompt?.classList.remove("visible");
-  chatMessages.style.display = "";
-  document.querySelector(".chat-input") &&
-    (document.querySelector(".chat-input").style.display = "");
+  if (chatMessages) chatMessages.style.display = "";
+  const bar = document.querySelector(".chat-input");
+  if (bar) bar.style.display = "";
   if (btn) btn.textContent = "Start Live Chat";
   _showLiveChat();
 };
 
 function _showLiveChat() {
+  // Render cached messages
   liveMessages.forEach(_renderLiveBubble);
-  chatMessages.scrollTop = chatMessages.scrollHeight;
+  if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
   if (!liveMessages.length)
     _sysMsg(`You're chatting as ${liveName}. We reply Mon–Sat, 9AM–7PM EAT.`);
+
+  // Subscribe to realtime — NO server-side filter, JS filters instead
   _subscribeToLive();
   _trackPresence();
 }
 
-// ── Supabase Realtime for live chat ───────────────────────────
+// ── Supabase Realtime (user side) ─────────────────────────────
+// KEY FIX: No filter= parameter. We receive ALL live_chat_messages
+// inserts and filter by session_id in JS. This works regardless of
+// whether REPLICA IDENTITY FULL is set on the table.
 function _subscribeToLive() {
   if (!sb || !liveSessionId) return;
   if (liveCh) sb.removeChannel(liveCh);
+
   liveCh = sb
-    .channel("live-chat-client-" + liveSessionId)
+    .channel("joyalty-live-" + liveSessionId) // unique channel per session
     .on(
       "postgres_changes",
       {
         event: "INSERT",
         schema: "public",
         table: "live_chat_messages",
-        filter: `session_id=eq.${liveSessionId}`,
+        // NO filter here — filter in callback instead
       },
       (payload) => {
         const msg = payload.new;
-        if (!msg || msg.sender === "user") return; // skip our own messages
-        const known = new Set(liveMessages.map((m) => String(m.id)));
-        if (!known.has(String(msg.id))) {
-          liveMessages.push(msg);
-          _save("joyalty_live_msgs", liveMessages);
-          _renderLiveBubble(msg);
-          // Mark as read since we're looking at the chat
-          if (chatOpen && chatMode === "live") _markRead();
-        }
+        if (!msg) return;
+
+        // JS-side filter: only care about our session
+        if (msg.session_id !== liveSessionId) return;
+
+        // Skip messages we sent ourselves (optimistic render already done)
+        if (msg.sender === "user" && sentMsgIds.has(String(msg.id))) return;
+
+        // Skip if already rendered
+        const already = liveMessages.some(
+          (m) => String(m.id) === String(msg.id),
+        );
+        if (already) return;
+
+        // Admin message — this is the one that was missing before
+        liveMessages.push(msg);
+        _save("joyalty_live_msgs", liveMessages);
+        _renderLiveBubble(msg);
+
+        // Hide typing indicator when admin sends
+        if (msg.sender === "admin") _updateAdminTypingUI(false);
+
+        // Mark as read since user is looking at the chat
+        if (chatOpen && chatMode === "live") _markRead();
       },
     )
-    // Admin typing indicator via presence
-    .on("presence", { event: "sync" }, () => {
-      const state = liveCh.presenceState();
-      const adminOnline = Object.values(state).some((arr) =>
-        arr.some((u) => u.role === "admin"),
-      );
-      _updateAdminTypingUI(false); // presence sync doesn't mean typing
-    })
     .on("broadcast", { event: "typing" }, ({ payload }) => {
       if (payload.sender === "admin" && payload.sessionId === liveSessionId) {
-        adminTyping = payload.typing;
-        _updateAdminTypingUI(adminTyping);
+        _updateAdminTypingUI(payload.typing);
       }
     })
-    .subscribe();
+    .subscribe((status) => {
+      console.log("[chat] Realtime status:", status);
+    });
 }
 
 function _trackPresence() {
   if (!sb || !liveSessionId) return;
   if (presenceCh) sb.removeChannel(presenceCh);
   presenceCh = sb.channel("user-presence").subscribe(async (status) => {
-    if (status === "SUBSCRIBED")
+    if (status === "SUBSCRIBED") {
       await presenceCh.track({
         user: liveSessionId,
         role: "user",
         online_at: new Date().toISOString(),
       });
+    }
   });
   window.addEventListener("beforeunload", () => {
     if (presenceCh) presenceCh.untrack();
   });
 }
 
+// Broadcast typing to admin
 function _broadcastTyping(isTyp) {
   if (!liveCh) return;
-  liveCh.send({
-    type: "broadcast",
-    event: "typing",
-    payload: { sender: "user", sessionId: liveSessionId, typing: isTyp },
-  });
+  liveCh
+    .send({
+      type: "broadcast",
+      event: "typing",
+      payload: { sender: "user", sessionId: liveSessionId, typing: isTyp },
+    })
+    .catch(() => {});
 }
 
 function _updateAdminTypingUI(typing) {
@@ -315,8 +342,8 @@ function _updateAdminTypingUI(typing) {
       el.id = "adminTypingBubble";
       el.className = "message bot typing";
       el.innerHTML = "<span></span><span></span><span></span>";
-      chatMessages.appendChild(el);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
+      chatMessages?.appendChild(el);
+      if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
     }
   } else {
     el?.remove();
@@ -339,7 +366,7 @@ function _markRead() {
   }).catch(() => {});
 }
 
-// ── Typing broadcast from user ────────────────────────────────
+// User input typing broadcast
 if (chatInput) {
   chatInput.addEventListener("input", () => {
     if (chatMode !== "live") return;
@@ -355,9 +382,13 @@ if (chatInput) {
   });
 }
 
-// ── Render live bubble ─────────────────────────────────────────
+// ── Render a live bubble ──────────────────────────────────────
 function _renderLiveBubble(msg) {
   const isMe = msg.sender === "user";
+
+  // Do not render if already in DOM
+  if (chatMessages?.querySelector(`[data-msg-id="${msg.id}"]`)) return;
+
   const el = document.createElement("div");
   el.className = `message ${isMe ? "user" : "bot"}`;
   el.dataset.msgId = msg.id;
@@ -373,10 +404,10 @@ function _renderLiveBubble(msg) {
   if (msg.file_url) {
     html += _renderFileContent(msg);
   } else {
-    html += `<span>${_esc(msg.text)}</span>`;
+    html += `<span style="white-space:pre-wrap;word-break:break-word">${_esc(msg.text)}</span>`;
   }
 
-  // Meta row: time + ticks
+  // Meta: time + ticks
   const time = new Date(msg.timestamp || Date.now()).toLocaleTimeString(
     "en-KE",
     { hour: "2-digit", minute: "2-digit" },
@@ -384,8 +415,9 @@ function _renderLiveBubble(msg) {
   const ticks = isMe ? _renderTicks(msg) : "";
   html += `<div class="msg-meta"><span class="msg-time">${time}</span>${ticks}</div>`;
 
-  // Long press / right-click to quote
   el.innerHTML = html;
+
+  // Long-press / right-click to reply
   el.addEventListener("contextmenu", (e) => {
     e.preventDefault();
     _setReplyTo(msg);
@@ -399,58 +431,58 @@ function _renderLiveBubble(msg) {
   );
   el.addEventListener("touchend", () => clearTimeout(el._lp));
 
-  chatMessages.appendChild(el);
-  chatMessages.scrollTop = chatMessages.scrollHeight;
+  chatMessages?.appendChild(el);
 
-  // Animate in
+  // Animate
   el.style.opacity = "0";
   el.style.transform = "translateY(8px) scale(.97)";
   requestAnimationFrame(() => {
-    el.style.transition = "opacity .2s ease,transform .2s ease";
+    el.style.transition =
+      "opacity .2s ease, transform .2s cubic-bezier(.34,1.2,.64,1)";
     el.style.opacity = "1";
     el.style.transform = "none";
   });
+
+  if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 function _renderFileContent(msg) {
   const url = msg.file_url;
   const name = msg.file_name || "file";
   const type = msg.file_type || "";
-
-  if (type === "image") {
-    return `<img src="${url}" alt="${_esc(name)}" class="msg-img" onclick="openLightbox('${url}','image')" loading="lazy">`;
-  }
-  if (type === "audio" || type === "voice") {
+  if (type === "image")
+    return `<img src="${url}" alt="${_esc(name)}" class="msg-img" onclick="openLightbox('${url}')" loading="lazy">`;
+  if (type === "audio" || type === "voice")
     return `<div class="msg-audio">
       <button class="audio-play-btn" onclick="toggleAudio(this,'${url}')"><i class="fa-solid fa-play"></i></button>
       <div class="audio-bar"><div class="audio-progress"></div></div>
       <span class="audio-dur">0:00</span>
     </div>`;
-  }
-  if (type === "pdf") {
+  if (type === "pdf")
     return `<div class="msg-file pdf-file" onclick="openPDFModal('${url}','${_esc(name)}')">
-      <i class="fa-solid fa-file-pdf" style="color:#ef4444;font-size:1.5rem"></i>
+      <i class="fa-solid fa-file-pdf" style="color:#ef4444;font-size:1.4rem"></i>
       <span>${_esc(name)}</span>
-      <i class="fa-solid fa-expand" style="font-size:.8rem;opacity:.5"></i>
+      <i class="fa-solid fa-expand" style="font-size:.75rem;opacity:.5"></i>
     </div>`;
-  }
   return `<a href="${url}" target="_blank" rel="noopener" class="msg-file">
     <i class="fa-solid fa-file"></i><span>${_esc(name)}</span>
   </a>`;
 }
 
 function _renderTicks(msg) {
-  if (!msg.read_at)
-    return `<span class="ticks grey"><i class="fa-solid fa-check-double"></i></span>`;
-  return `<span class="ticks blue"><i class="fa-solid fa-check-double"></i></span>`;
+  if (msg.read_at)
+    return `<span class="ticks blue" title="Read"><i class="fa-solid fa-check-double"></i></span>`;
+  if (msg.delivered_at)
+    return `<span class="ticks grey" title="Delivered"><i class="fa-solid fa-check-double"></i></span>`;
+  return `<span class="ticks grey" title="Sent"><i class="fa-solid fa-check"></i></span>`;
 }
 
-// ── Reply / quote ──────────────────────────────────────────────
+// ── Reply / quote ─────────────────────────────────────────────
 function _setReplyTo(msg) {
   replyTo = {
     id: msg.id,
     sender: msg.sender,
-    text: msg.text || (msg.file_name ? "📎 " + msg.file_name : ""),
+    text: (msg.text || msg.file_name || "").substring(0, 80),
   };
   let bar = document.getElementById("replyBar");
   if (!bar) {
@@ -469,27 +501,7 @@ window.clearReply = function () {
   document.getElementById("replyBar")?.remove();
 };
 
-// ── File upload to Supabase Storage ───────────────────────────
-async function uploadFile(file) {
-  if (!sb) return null;
-  const ext = file.name.split(".").pop() || "bin";
-  const path = `chat/${liveSessionId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-  const { data, error } = await sb.storage
-    .from("chat-files")
-    .upload(path, file, { cacheControl: "3600", upsert: false });
-  if (error) throw new Error(error.message);
-  const { data: pub } = sb.storage.from("chat-files").getPublicUrl(path);
-  return pub.publicUrl;
-}
-
-function _fileType(file) {
-  if (file.type.startsWith("image/")) return "image";
-  if (file.type === "application/pdf") return "pdf";
-  if (file.type.startsWith("audio/")) return "audio";
-  return "file";
-}
-
-// ── Attach file button ─────────────────────────────────────────
+// ── File attach (user) ────────────────────────────────────────
 window.openFileAttach = function () {
   const input = document.createElement("input");
   input.type = "file";
@@ -508,19 +520,33 @@ window.openFileAttach = function () {
 
 async function _sendFile(file) {
   _sysMsg("Uploading…");
+  if (!sb) {
+    _sysMsg("File upload not available — Supabase not connected.");
+    return;
+  }
   try {
-    const url = await uploadFile(file);
-    const type = _fileType(file);
-    await _sendLiveMsg("", url, type, file.name, file.size);
+    const ext = file.name.split(".").pop() || "bin";
+    const path = `chat/${liveSessionId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const ft = file.type.startsWith("image/")
+      ? "image"
+      : file.type === "application/pdf"
+        ? "pdf"
+        : file.type.startsWith("audio/")
+          ? "audio"
+          : "file";
+    const { error: upErr } = await sb.storage
+      .from("chat-files")
+      .upload(path, file, { cacheControl: "3600" });
+    if (upErr) throw new Error(upErr.message);
+    const { data: pub } = sb.storage.from("chat-files").getPublicUrl(path);
+    await _sendLiveMsg("", pub.publicUrl, ft, file.name, file.size);
   } catch (e) {
     _sysMsg("Upload failed: " + e.message);
   }
 }
 
-// ── Voice recording ────────────────────────────────────────────
-let recBtn = null;
+// ── Voice recording (user) ────────────────────────────────────
 window.toggleRecording = async function (btn) {
-  recBtn = btn;
   if (mediaRecorder && mediaRecorder.state === "recording") {
     mediaRecorder.stop();
     btn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
@@ -548,7 +574,7 @@ window.toggleRecording = async function (btn) {
   }
 };
 
-// ── Send live message ──────────────────────────────────────────
+// ── Send live message ─────────────────────────────────────────
 async function _sendLiveMsg(
   text = "",
   fileUrl = null,
@@ -556,47 +582,33 @@ async function _sendLiveMsg(
   fileName = null,
   fileSize = null,
 ) {
-  const msg = {
-    id: Date.now(),
-    sessionId: liveSessionId,
+  const tempId = "u-tmp-" + Date.now();
+  const payload = {
+    id: tempId,
+    session_id: liveSessionId,
     sender: "user",
     name: liveName,
     text,
     timestamp: new Date().toISOString(),
-    fileUrl,
-    fileType,
-    fileName,
-    fileSize,
-    replyToId: replyTo?.id || null,
-    replyPreview: replyTo ? replyTo.text.substring(0, 80) : null,
+    file_url: fileUrl,
+    file_type: fileType,
+    file_name: fileName,
+    file_size: fileSize,
+    reply_to_id: replyTo?.id || null,
+    reply_preview: replyTo?.text || null,
+    reactions: {},
   };
 
   // Optimistic render
-  liveMessages.push({
-    ...msg,
-    file_url: fileUrl,
-    file_type: fileType,
-    file_name: fileName,
-    file_size: fileSize,
-    reply_to_id: msg.replyToId,
-    reply_preview: msg.replyPreview,
-  });
+  liveMessages.push(payload);
   _save("joyalty_live_msgs", liveMessages);
-  _renderLiveBubble({
-    ...msg,
-    file_url: fileUrl,
-    file_type: fileType,
-    file_name: fileName,
-    file_size: fileSize,
-    reply_to_id: msg.replyToId,
-    reply_preview: msg.replyPreview,
-  });
-  clearReply();
+  _renderLiveBubble(payload);
+  window.clearReply();
   isTyping = false;
   _broadcastTyping(false);
 
   try {
-    await fetch("/api/live-chat", {
+    const res = await fetch("/api/live-chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -604,20 +616,35 @@ async function _sendLiveMsg(
         sender: "user",
         name: liveName,
         text,
-        timestamp: msg.timestamp,
+        timestamp: payload.timestamp,
         fileUrl,
         fileType,
         fileName,
         fileSize,
-        replyToId: msg.replyToId,
-        replyPreview: msg.replyPreview,
+        replyToId: payload.reply_to_id,
+        replyPreview: payload.reply_preview,
       }),
     });
-  } catch (_) {}
+    const data = await res.json();
+    if (data.id) {
+      // Track real ID so Realtime doesn't echo it back
+      sentMsgIds.add(String(data.id));
+      // Update temp bubble's data-msg-id
+      const el = chatMessages?.querySelector(`[data-msg-id="${tempId}"]`);
+      if (el) el.dataset.msgId = data.id;
+      // Update local cache
+      liveMessages = liveMessages.map((m) =>
+        m.id === tempId ? { ...m, id: data.id } : m,
+      );
+      _save("joyalty_live_msgs", liveMessages);
+    }
+  } catch (_) {
+    _sysMsg("⚠ Message could not be sent. Check your connection.");
+  }
 }
 
-// ── Lightbox ───────────────────────────────────────────────────
-window.openLightbox = function (src, type) {
+// ── Lightbox ──────────────────────────────────────────────────
+window.openLightbox = function (src) {
   let box = document.getElementById("chatLightbox");
   if (!box) {
     box = document.createElement("div");
@@ -627,31 +654,29 @@ window.openLightbox = function (src, type) {
     box.onclick = () => box.remove();
     document.body.appendChild(box);
   }
-  box.innerHTML = `<img src="${src}" style="max-width:100%;max-height:90vh;border-radius:10px;box-shadow:0 8px 40px rgba(0,0,0,.7)" onclick="event.stopPropagation()">
-    <button style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:1rem" onclick="document.getElementById('chatLightbox').remove()"><i class="fa-solid fa-xmark"></i></button>`;
+  box.innerHTML = `<img src="${src}" style="max-width:100%;max-height:90vh;border-radius:10px;object-fit:contain" onclick="event.stopPropagation()"><button style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:1rem" onclick="document.getElementById('chatLightbox').remove()"><i class="fa-solid fa-xmark"></i></button>`;
 };
 
-// ── PDF Modal ──────────────────────────────────────────────────
+// ── PDF Modal ─────────────────────────────────────────────────
 window.openPDFModal = function (src, name) {
   let modal = document.getElementById("chatPDFModal");
   if (!modal) {
     modal = document.createElement("div");
     modal.id = "chatPDFModal";
     modal.style.cssText =
-      "position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:flex;flex-direction:column;align-items:center;padding:16px;";
+      "position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999;display:flex;flex-direction:column;align-items:center;padding:16px;";
     document.body.appendChild(modal);
   }
   modal.innerHTML = `
     <div style="display:flex;align-items:center;gap:12px;width:100%;max-width:800px;margin-bottom:10px">
       <span style="color:#f0ece4;font-size:.9rem;flex:1">${_esc(name)}</span>
-      <a href="${src}" target="_blank" style="color:#d4a84b;font-size:.8rem;text-decoration:none"><i class="fa-solid fa-download"></i> Download</a>
+      <a href="${src}" target="_blank" rel="noopener" style="color:#d4a84b;font-size:.8rem;text-decoration:none"><i class="fa-solid fa-download"></i> Download</a>
       <button onclick="document.getElementById('chatPDFModal').remove()" style="background:none;border:none;color:rgba(255,255,255,.6);cursor:pointer;font-size:1.1rem"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <iframe src="${src}" style="width:100%;max-width:800px;flex:1;border:none;border-radius:10px;background:#fff" title="${_esc(name)}"></iframe>`;
 };
 
-// ── Audio player ───────────────────────────────────────────────
-const audioPlayers = {};
+// ── Audio player ──────────────────────────────────────────────
 window.toggleAudio = function (btn, src) {
   let audio = audioPlayers[src];
   if (!audio) {
@@ -660,11 +685,9 @@ window.toggleAudio = function (btn, src) {
     const bar = btn.nextElementSibling;
     const dur = bar?.nextElementSibling;
     audio.addEventListener("timeupdate", () => {
-      const pct = audio.duration
-        ? (audio.currentTime / audio.duration) * 100
-        : 0;
+      const p = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
       const prog = bar?.querySelector(".audio-progress");
-      if (prog) prog.style.width = pct + "%";
+      if (prog) prog.style.width = p + "%";
       if (dur) dur.textContent = _fmtTime(audio.currentTime);
     });
     audio.addEventListener("ended", () => {
@@ -684,17 +707,17 @@ function _fmtTime(s) {
   return m + ":" + (Math.floor(s % 60) + "").padStart(2, "0");
 }
 
-// ── AI mode helpers ────────────────────────────────────────────
+// ── AI mode helpers ───────────────────────────────────────────
 function typeMessage(text, type) {
   removeTyping();
   const el = document.createElement("div");
   el.className = `message ${type}`;
-  chatMessages.appendChild(el);
+  chatMessages?.appendChild(el);
   let i = 0;
   (function tick() {
     if (i < text.length) {
       el.textContent += text.charAt(i++);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
+      if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
       setTimeout(tick, 13);
     }
   })();
@@ -709,8 +732,8 @@ function showTyping() {
   el.className = "typing";
   el.id = "typing";
   el.innerHTML = "<span></span><span></span><span></span>";
-  chatMessages.appendChild(el);
-  chatMessages.scrollTop = chatMessages.scrollHeight;
+  chatMessages?.appendChild(el);
+  if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 function removeTyping() {
   document.getElementById("typing")?.remove();
@@ -719,21 +742,19 @@ function _sysMsg(text) {
   const d = document.createElement("div");
   d.className = "chat-system-msg";
   d.textContent = text;
-  chatMessages.appendChild(d);
-  chatMessages.scrollTop = chatMessages.scrollHeight;
+  chatMessages?.appendChild(d);
+  if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 function updateMemory(text) {
   const t = text.toLowerCase();
   if (t.includes("wedding")) memory.sessionType = "wedding";
   if (t.includes("portrait")) memory.sessionType = "portrait";
   if (t.includes("event")) memory.sessionType = "event";
-  if (t.includes("commercial")) memory.sessionType = "commercial";
   if (/\d{4}/.test(t)) memory.date = text;
   if (t.includes("@")) memory.email = text;
   if (/\d{9,13}/.test(t)) memory.phone = text;
   _save("studioMemory", memory);
 }
-
 function startBooking() {
   bookingFlow.active = true;
   bookingFlow.step = 1;
@@ -775,7 +796,6 @@ async function handleBooking(text) {
   }
   _save("studioMemory", memory);
 }
-
 async function callAI() {
   const formatted = conversation
     .filter((m) => m.type === "user" || m.type === "bot")
@@ -793,17 +813,17 @@ async function callAI() {
     const data = await res.json();
     removeTyping();
     return data?.reply || "I'm here to help!";
-  } catch (err) {
+  } catch (_) {
     removeTyping();
     return "⚠ Trouble connecting. Please try again.";
   }
 }
 
-// ── Main send ──────────────────────────────────────────────────
+// ── Main send ─────────────────────────────────────────────────
 async function sendMessage() {
-  const text = chatInput.value.trim();
+  const text = chatInput?.value.trim();
   if (!text) return;
-  chatInput.value = "";
+  if (chatInput) chatInput.value = "";
 
   if (chatMode === "live") {
     if (!liveSessionId) {
@@ -836,7 +856,9 @@ async function sendMessage() {
     if (clean) typeMessage(clean, "bot");
     await _delay(400);
     startBooking();
-  } else typeMessage(reply, "bot");
+  } else {
+    typeMessage(reply, "bot");
+  }
 }
 
 if (sendBtn) sendBtn.onclick = sendMessage;
@@ -852,9 +874,10 @@ if (liveNameInput)
     if (e.key === "Enter") window.confirmLiveName();
   });
 
-// ── Delete modal wiring ────────────────────────────────────────
+// ── Delete modal ──────────────────────────────────────────────
 window.openDeleteModal = () => {
-  document.getElementById("deleteModal").style.display = "flex";
+  const m = document.getElementById("deleteModal");
+  if (m) m.style.display = "flex";
 };
 document.getElementById("confirmDelete")?.addEventListener("click", () => {
   conversation = [];
@@ -871,26 +894,23 @@ document.getElementById("confirmDelete")?.addEventListener("click", () => {
   liveMessages = [];
   liveSessionId = null;
   liveName = null;
-  chatMessages.innerHTML = "";
-  document.getElementById("deleteModal").style.display = "none";
+  sentMsgIds.clear();
+  if (chatMessages) chatMessages.innerHTML = "";
+  const m = document.getElementById("deleteModal");
+  if (m) m.style.display = "none";
   chatMode = "ai";
   _refreshPill();
   _enterMode("ai");
 });
 document.getElementById("cancelDelete")?.addEventListener("click", () => {
-  document.getElementById("deleteModal").style.display = "none";
+  const m = document.getElementById("deleteModal");
+  if (m) m.style.display = "none";
 });
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
-    document.getElementById("deleteModal").style.display = "none";
+    const m = document.getElementById("deleteModal");
+    if (m) m.style.display = "none";
     document.getElementById("chatLightbox")?.remove();
     document.getElementById("chatPDFModal")?.remove();
   }
 });
-
-function _esc(s) {
-  return String(s || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}
