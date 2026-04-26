@@ -203,7 +203,8 @@ window.confirmLiveName = async function () {
       body: JSON.stringify({ username: input }),
     });
     const data = await r.json();
-    if (r.status === 409) {
+
+    if (r.status === 409 || data.available === false) {
       if (liveNameInput) {
         liveNameInput.value = "";
         liveNameInput.placeholder = data.error || "Name taken — try another.";
@@ -216,6 +217,9 @@ window.confirmLiveName = async function () {
       if (liveNameInput) liveNameInput.placeholder = data.error;
       if (btn) btn.textContent = "Start Live Chat";
       return;
+    }
+    if (!data.username || !data.sessionId) {
+      throw new Error("Invalid server response");
     }
     liveName = data.username;
     liveSessionId = data.sessionId;

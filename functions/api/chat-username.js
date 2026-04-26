@@ -73,7 +73,17 @@ export async function onRequestPost(context) {
     const { error } = await db
       .from("chat_users")
       .insert({ username: clean, session_id: sessionId });
-    if (error) return j({ error: error.message }, 500);
+
+    if (error) {
+      // Handle race condition: two users claimed same username simultaneously
+      if (error.code === "23505") {
+        return j(
+          { available: false, error: "That username was just taken. Try another." },
+          409,
+        );
+      }
+      return j({ error: error.message }, 500);
+    }
     return j({ available: true, username: clean, sessionId });
   }
 
@@ -85,6 +95,8 @@ export async function onRequestPost(context) {
       .from("chat_users")
       .insert({ username: auto, session_id: sessionId });
     if (!error) return j({ username: auto, sessionId, generated: true });
+    // Skip on unique violation — try next name
+    if (error.code !== "23505") return j({ error: error.message }, 500);
   }
 
   return j(
