@@ -27,12 +27,21 @@ let presenceCh = null;
 let reconnectTimer = null;
 
 async function initSupabase() {
+  // Wait for supabase CDN global to be available
+  for (let i = 0; i < 10; i++) {
+    if (window.supabase) break;
+    await new Promise((r) => setTimeout(r, 200));
+  }
+  if (!window.supabase) {
+    console.error("[chat] Supabase CDN not loaded");
+    return;
+  }
   try {
     const r = await fetch("/api/config");
     if (!r.ok) throw new Error("config HTTP " + r.status);
     const d = await r.json();
     if (!d.supabaseUrl || !d.supabaseAnon) throw new Error("missing config values");
-    sb = supabase.createClient(d.supabaseUrl, d.supabaseAnon);
+    sb = window.supabase.createClient(d.supabaseUrl, d.supabaseAnon);
     console.log("[chat] Supabase ready");
   } catch (e) {
     console.error("[chat] Supabase init failed:", e.message);
