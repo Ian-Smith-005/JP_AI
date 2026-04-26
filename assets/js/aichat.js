@@ -24,20 +24,32 @@
 let sb = null;
 let liveCh = null;
 let presenceCh = null;
+let reconnectTimer = null;
 
 async function initSupabase() {
   try {
     const r = await fetch("/api/config");
+    if (!r.ok) throw new Error("config HTTP " + r.status);
     const d = await r.json();
-    if (d.supabaseUrl && d.supabaseAnon) {
-      sb = supabase.createClient(d.supabaseUrl, d.supabaseAnon);
-      console.log("[chat] Supabase ready");
-    }
+    if (!d.supabaseUrl || !d.supabaseAnon) throw new Error("missing config values");
+    sb = supabase.createClient(d.supabaseUrl, d.supabaseAnon);
+    console.log("[chat] Supabase ready");
   } catch (e) {
-    console.warn("[chat] Supabase config failed:", e.message);
+    console.error("[chat] Supabase init failed:", e.message);
   }
 }
 initSupabase();
+
+// ── Visibility reconnect ──────────────────────────────────────
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && chatMode === "live" && liveSessionId) {
+    clearTimeout(reconnectTimer);
+    reconnectTimer = setTimeout(() => {
+      console.log("[chat] Visibility restored — reconnecting realtime");
+      _subscribeToLive();
+    }, 500);
+  }
+});
 
 // ── DOM refs ──────────────────────────────────────────────────
 const chatToggle = document.getElementById("chatToggle");
@@ -304,8 +316,18 @@ function _subscribeToLive() {
         _updateAdminTypingUI(payload.typing);
       }
     })
-    .subscribe((status) => {
-      console.log("[chat] Realtime status:", status);
+    .subscribe({
+      status: (s) => {
+        console.log("[chat] Realtime status:", s);
+        if (s === "CHANNEL_ERROR" || s === "TIMED_OUT") {
+          // Attempt reconnect after 3s
+          clearTimeout(reconnectTimer);
+          reconnectTimer = setTimeout(() => {
+            console.log("[chat] Realtime reconnecting…");
+            _subscribeToLive();
+          }, 3000);
+        }
+      },
     });
 }
 
